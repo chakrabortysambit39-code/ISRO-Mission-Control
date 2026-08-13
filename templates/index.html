@@ -21,7 +21,10 @@
 
 <div class="app">
 
-    <!-- HEADER -->
+    <!-- ======================================================
+         HEADER
+         ====================================================== -->
+
     <header class="topbar">
 
         <div>
@@ -41,10 +44,14 @@
     </header>
 
 
-    <!-- MISSION -->
+    <!-- ======================================================
+         MISSION INFORMATION
+         ====================================================== -->
+
     <section class="panel mission-panel">
 
         <div>
+
             <span class="label">
                 CURRENT MISSION
             </span>
@@ -56,6 +63,7 @@
             <span class="muted">
                 LUNAR EXPLORATION • SIMULATION
             </span>
+
         </div>
 
         <div class="mission-time">
@@ -73,57 +81,199 @@
     </section>
 
 
-    <!-- TELEMETRY -->
+    <!-- ======================================================
+         TELEMETRY
+         ====================================================== -->
+
     <section class="telemetry-grid">
 
         <div class="telemetry-card">
-            <span>ALTITUDE</span>
-            <strong id="altitude">0.0</strong>
-            <small>KM</small>
+
+            <span>
+                ALTITUDE
+            </span>
+
+            <strong id="altitude">
+                0.0
+            </strong>
+
+            <small>
+                KM
+            </small>
+
         </div>
 
-        <div class="telemetry-card">
-            <span>VELOCITY</span>
-            <strong id="velocity">0.00</strong>
-            <small>KM/S</small>
-        </div>
 
         <div class="telemetry-card">
-            <span>FUEL</span>
-            <strong id="fuel">100.0</strong>
-            <small>%</small>
+
+            <span>
+                VELOCITY
+            </span>
+
+            <strong id="velocity">
+                0.00
+            </strong>
+
+            <small>
+                KM/S
+            </small>
+
         </div>
 
+
         <div class="telemetry-card">
-            <span>TEMPERATURE</span>
-            <strong id="temperature">28.0</strong>
-            <small>°C</small>
+
+            <span>
+                FUEL
+            </span>
+
+            <strong id="fuel">
+                100.0
+            </strong>
+
+            <small>
+                %
+            </small>
+
+        </div>
+
+
+        <div class="telemetry-card">
+
+            <span>
+                TEMPERATURE
+            </span>
+
+            <strong id="temperature">
+                28.0
+            </strong>
+
+            <small>
+                °C
+            </small>
+
         </div>
 
     </section>
 
 
-    <!-- MAIN AREA -->
+    <!-- ======================================================
+         MAIN MISSION AREA
+         ====================================================== -->
+
     <section class="main-grid">
 
 
-        <!-- ROCKET -->
-        <div class="panel rocket-panel">
+        <!-- ==================================================
+             EARTH + ORBIT
+             ================================================== -->
 
-            <span class="label">
-                LAUNCH VEHICLE
-            </span>
+        <div class="panel space-panel">
 
-            <h2>
-                LVM3
-            </h2>
+            <div class="space-header">
+
+                <div>
+
+                    <span class="label">
+                        FLIGHT TRAJECTORY
+                    </span>
+
+                    <h2>
+                        EARTH ORBIT
+                    </h2>
+
+                </div>
+
+                <div
+                    id="orbitStatus"
+                    class="orbit-status"
+                >
+                    GROUND
+                </div>
+
+            </div>
+
 
             <div
-                id="rocket"
-                class="rocket"
+                id="spaceScene"
+                class="space-scene"
             >
-                🚀
+
+                <!-- ORBIT PATH -->
+
+                <div
+                    id="orbitPath"
+                    class="orbit-path"
+                ></div>
+
+
+                <!-- EARTH -->
+
+                <div
+                    id="earth"
+                    class="earth"
+                >
+
+                    <div
+                        class="earth-cloud cloud-1"
+                    ></div>
+
+                    <div
+                        class="earth-cloud cloud-2"
+                    ></div>
+
+                    <div
+                        class="earth-cloud cloud-3"
+                    ></div>
+
+                </div>
+
+
+                <!-- ROCKET -->
+
+                <div
+                    id="spaceRocket"
+                    class="space-rocket"
+                >
+                    🚀
+                </div>
+
+
+                <!-- SATELLITE -->
+
+                <div
+                    id="satellite"
+                    class="satellite"
+                >
+                    🛰️
+                </div>
+
+
+                <div
+                    class="orbit-marker marker-1"
+                >
+                    LEO
+                </div>
+
+
+                <div
+                    class="orbit-marker marker-2"
+                >
+                    ORBIT
+                </div>
+
+
+                <!-- ALTITUDE -->
+
+                <div
+                    id="spaceAltitude"
+                    class="space-altitude"
+                >
+                    ALT 0.0 KM
+                </div>
+
             </div>
+
 
             <div
                 id="vehicleStatus"
@@ -135,7 +285,10 @@
         </div>
 
 
-        <!-- FLIGHT STATUS -->
+        <!-- ==================================================
+             FLIGHT STATUS
+             ================================================== -->
+
         <div class="panel flight-panel">
 
             <span class="label">
@@ -159,7 +312,10 @@
         </div>
 
 
-        <!-- LOG -->
+        <!-- ==================================================
+             MISSION LOG
+             ================================================== -->
+
         <div class="panel log-panel">
 
             <span class="label">
@@ -193,7 +349,10 @@
     </section>
 
 
-    <!-- FUEL -->
+    <!-- ======================================================
+         FUEL
+         ====================================================== -->
+
     <section class="panel fuel-panel">
 
         <div class="fuel-header">
@@ -220,7 +379,10 @@
     </section>
 
 
-    <!-- CONTROLS -->
+    <!-- ======================================================
+         CONTROLS
+         ====================================================== -->
+
     <section class="controls">
 
         <button
@@ -245,7 +407,6 @@
         </button>
 
     </section>
-
 
 </div>
 

@@ -20,7 +20,7 @@ let timer = null;
 
 
 /* ==========================================================
-   AUDIO SYSTEM
+   AUDIO
    ========================================================== */
 
 let audioContext = null;
@@ -59,11 +59,38 @@ const fuelPercent =
 const missionLog =
     document.getElementById("missionLog");
 
-const rocket =
-    document.getElementById("rocket");
-
 const missionTime =
     document.getElementById("missionTime");
+
+
+/* ==========================================================
+   V2.1 SPACE ELEMENTS
+   ========================================================== */
+
+const spaceRocket =
+    document.getElementById(
+        "spaceRocket"
+    );
+
+const satellite =
+    document.getElementById(
+        "satellite"
+    );
+
+const orbitPath =
+    document.getElementById(
+        "orbitPath"
+    );
+
+const orbitStatus =
+    document.getElementById(
+        "orbitStatus"
+    );
+
+const spaceAltitude =
+    document.getElementById(
+        "spaceAltitude"
+    );
 
 
 /* ==========================================================
@@ -81,7 +108,6 @@ function initializeAudio() {
                     window.AudioContext ||
                     window.webkitAudioContext
                 )();
-
         }
 
         if (
@@ -103,7 +129,7 @@ function initializeAudio() {
 
 
 /* ==========================================================
-   ELECTRONIC COUNTDOWN BEEP
+   COUNTDOWN BEEP
    ========================================================== */
 
 function countdownBeep() {
@@ -234,7 +260,7 @@ function ignitionSound() {
 
 
 /* ==========================================================
-   SATELLITE DEPLOYMENT SOUND
+   DEPLOYMENT SOUND
    ========================================================== */
 
 function deploymentSound() {
@@ -302,7 +328,7 @@ function deploymentSound() {
 
 
 /* ==========================================================
-   LOAD SONG
+   SONG
    ========================================================== */
 
 function prepareSong() {
@@ -322,11 +348,6 @@ function prepareSong() {
     }
 }
 
-
-/* ==========================================================
-   PLAY SONG
-   ========================================================== */
-
 function playFinalSong() {
 
     prepareSong();
@@ -335,7 +356,8 @@ function playFinalSong() {
         return;
     }
 
-    finalSong.currentTime = 0;
+    finalSong.currentTime =
+        0;
 
     const result =
         finalSong.play();
@@ -346,13 +368,13 @@ function playFinalSong() {
             error => {
 
                 console.log(
-                    "Song playback was blocked:",
+                    "Song playback blocked:",
                     error
                 );
 
                 log(
                     "AUDIO",
-                    "Click LAUNCH first to enable audio playback."
+                    "Song playback was blocked by browser."
                 );
             }
         );
@@ -363,11 +385,6 @@ function playFinalSong() {
         "MAA TUJHE SALAAM PLAYBACK STARTED"
     );
 }
-
-
-/* ==========================================================
-   STOP SONG
-   ========================================================== */
 
 function stopFinalSong() {
 
@@ -461,6 +478,255 @@ function updateMissionClock() {
 
 
 /* ==========================================================
+   V2.1 SPACE SCENE
+   ========================================================== */
+
+function updateSpaceScene() {
+
+    if (!spaceRocket) {
+        return;
+    }
+
+    spaceAltitude.textContent =
+        `ALT ${altitude.toFixed(1)} KM`;
+
+
+    /* --------------------------------------------------------
+       COUNTDOWN
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "COUNTDOWN"
+    ) {
+
+        orbitStatus.textContent =
+            "GROUND";
+
+        spaceRocket.className =
+            "space-rocket";
+
+        spaceRocket.style.left =
+            "50%";
+
+        spaceRocket.style.top =
+            "80%";
+
+        satellite.className =
+            "satellite";
+
+        orbitPath.classList.remove(
+            "active"
+        );
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       IGNITION
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "IGNITION"
+    ) {
+
+        orbitStatus.textContent =
+            "IGNITION";
+
+        spaceRocket.className =
+            "space-rocket visible ascent";
+
+        spaceRocket.style.left =
+            "50%";
+
+        spaceRocket.style.top =
+            "75%";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       LIFTOFF
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "LIFTOFF"
+    ) {
+
+        orbitStatus.textContent =
+            "LIFTOFF";
+
+        spaceRocket.className =
+            "space-rocket visible ascent";
+
+        spaceRocket.style.left =
+            "50%";
+
+        spaceRocket.style.top =
+            "66%";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       ASCENT
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "ASCENT"
+    ) {
+
+        orbitStatus.textContent =
+            "ASCENT";
+
+        const progress =
+            Math.min(
+                altitude / 100,
+                1
+            );
+
+        /*
+         * Move rocket from lower section
+         * toward top of scene.
+         */
+
+        const rocketTop =
+            66 -
+            progress * 45;
+
+        const rocketLeft =
+            50 +
+            progress * 10;
+
+        spaceRocket.className =
+            "space-rocket visible ascent";
+
+        spaceRocket.style.left =
+            `${rocketLeft}%`;
+
+        spaceRocket.style.top =
+            `${rocketTop}%`;
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       ORBIT
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "ORBIT"
+    ) {
+
+        orbitStatus.textContent =
+            "ORBIT";
+
+        orbitPath.classList.add(
+            "active"
+        );
+
+        spaceRocket.className =
+            "space-rocket visible orbiting";
+
+        spaceRocket.style.left =
+            "50%";
+
+        spaceRocket.style.top =
+            "53%";
+
+        satellite.className =
+            "satellite";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       SATELLITE DEPLOYED
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "SATELLITE_DEPLOYED"
+    ) {
+
+        orbitStatus.textContent =
+            "DEPLOYED";
+
+        orbitPath.classList.add(
+            "active"
+        );
+
+        spaceRocket.className =
+            "space-rocket visible orbiting";
+
+        satellite.className =
+            "satellite deployed";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       MISSION SUCCESS
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "MISSION_SUCCESS"
+    ) {
+
+        orbitStatus.textContent =
+            "MISSION COMPLETE";
+
+        orbitPath.classList.add(
+            "active"
+        );
+
+        spaceRocket.className =
+            "space-rocket visible orbiting";
+
+        satellite.className =
+            "satellite deployed";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       ABORT
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "ABORTED"
+    ) {
+
+        orbitStatus.textContent =
+            "ABORT";
+
+        spaceRocket.className =
+            "space-rocket";
+
+        satellite.className =
+            "satellite";
+
+        orbitPath.classList.remove(
+            "active"
+        );
+    }
+}
+
+
+/* ==========================================================
    START MISSION
    ========================================================== */
 
@@ -470,17 +736,12 @@ function launchMission() {
         return;
     }
 
-    /*
-     * IMPORTANT:
-     * The Launch button is a user interaction,
-     * so the browser allows us to start audio here.
-     */
-
     initializeAudio();
 
     prepareSong();
 
-    running = true;
+    running =
+        true;
 
     phase =
         "COUNTDOWN";
@@ -512,10 +773,6 @@ function launchMission() {
     flightStatus.textContent =
         "COUNTDOWN INITIATED";
 
-    rocket.classList.remove(
-        "launching"
-    );
-
     log(
         "FLIGHT",
         "LAUNCH SEQUENCE INITIATED"
@@ -526,12 +783,13 @@ function launchMission() {
         "T−10"
     );
 
-    /* First electronic beep */
     countdownBeep();
 
     updateTelemetry();
 
     updateMissionClock();
+
+    updateSpaceScene();
 
     clearInterval(timer);
 
@@ -577,11 +835,6 @@ function missionTick() {
                 `T−${countdown}`
             );
 
-            /*
-             * EXACTLY ONE ELECTRONIC BEEP
-             * PER COUNTDOWN NUMBER
-             */
-
             countdownBeep();
 
         } else {
@@ -607,6 +860,8 @@ function missionTick() {
             );
         }
 
+        updateSpaceScene();
+
         return;
     }
 
@@ -626,10 +881,6 @@ function missionTick() {
         flightStatus.textContent =
             "LIFTOFF CONFIRMED";
 
-        rocket.classList.add(
-            "launching"
-        );
-
         log(
             "FLIGHT",
             "VEHICLE HAS CLEARED LAUNCH TOWER"
@@ -638,6 +889,8 @@ function missionTick() {
         speak(
             "Liftoff confirmed."
         );
+
+        updateSpaceScene();
 
         return;
     }
@@ -662,6 +915,8 @@ function missionTick() {
             "FLIGHT",
             "VEHICLE ASCENDING"
         );
+
+        updateSpaceScene();
 
         return;
     }
@@ -716,6 +971,8 @@ function missionTick() {
             );
         }
 
+        updateSpaceScene();
+
         return;
     }
 
@@ -750,9 +1007,7 @@ function missionTick() {
             `ORBITAL OPERATIONS T+${orbitSeconds}s`
         );
 
-        /*
-         * Satellite deployment after 5 seconds
-         */
+        updateSpaceScene();
 
         if (
             orbitSeconds >= 5
@@ -763,6 +1018,8 @@ function missionTick() {
 
         return;
     }
+
+    updateSpaceScene();
 }
 
 
@@ -780,10 +1037,6 @@ function deploySatellite() {
     phase =
         "SATELLITE_DEPLOYED";
 
-    rocket.classList.remove(
-        "launching"
-    );
-
     flightStatus.textContent =
         "SATELLITE DEPLOYED";
 
@@ -794,13 +1047,11 @@ function deploySatellite() {
 
     deploymentSound();
 
+    updateSpaceScene();
+
     speak(
         "Satellite deployed successfully."
     );
-
-    /*
-     * Wait for announcement before final message.
-     */
 
     setTimeout(
         missionSuccess,
@@ -826,18 +1077,11 @@ function missionSuccess() {
         "MISSION ACCOMPLISHED"
     );
 
-    /*
-     * Phonetic spelling gives the browser voice
-     * a clearer Indian-style pronunciation.
-     */
+    updateSpaceScene();
 
     speak(
         "Mission accomplished. Jai Heend!"
     );
-
-    /*
-     * Start the song after the announcement.
-     */
 
     setTimeout(
         playFinalSong,
@@ -867,11 +1111,9 @@ function abortMission() {
     flightStatus.textContent =
         "MISSION ABORTED";
 
-    rocket.classList.remove(
-        "launching"
-    );
-
     stopFinalSong();
+
+    updateSpaceScene();
 
     if (
         "speechSynthesis"
@@ -904,11 +1146,6 @@ function speak(text) {
         return;
     }
 
-    /*
-     * Cancel anything currently speaking
-     * so announcements don't pile up.
-     */
-
     window.speechSynthesis.cancel();
 
     const speech =
@@ -924,10 +1161,6 @@ function speak(text) {
 
     speech.volume =
         1.0;
-
-    /*
-     * Try to select an English voice.
-     */
 
     const voices =
         window.speechSynthesis
@@ -1008,19 +1241,17 @@ document
 
 
 /* ==========================================================
-   INITIALIZATION
+   INITIAL STATE
    ========================================================== */
 
 updateTelemetry();
 
 updateMissionClock();
 
+updateSpaceScene();
+
 prepareSong();
 
-
-/*
- * Some browsers populate their voice list asynchronously.
- */
 
 if (
     "speechSynthesis"

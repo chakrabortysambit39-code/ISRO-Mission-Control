@@ -5,6 +5,8 @@
 body {
     margin: 0;
 
+    min-height: 100vh;
+
     background:
         radial-gradient(
             circle at top,
@@ -19,16 +21,13 @@ body {
         "Segoe UI",
         Arial,
         sans-serif;
-
-    min-height: 100vh;
 }
-
 
 .app {
     width: 100%;
     max-width: 1500px;
 
-    margin: auto;
+    margin: 0 auto;
 
     padding: 24px;
 }
@@ -51,6 +50,7 @@ body {
     margin: 0;
 
     font-size: 27px;
+
     letter-spacing: 1px;
 }
 
@@ -60,6 +60,7 @@ body {
     color: #64758c;
 
     font-size: 11px;
+
     letter-spacing: 1px;
 }
 
@@ -67,6 +68,7 @@ body {
     color: #00e676;
 
     font-size: 12px;
+
     font-weight: bold;
 }
 
@@ -78,9 +80,9 @@ body {
 
     margin-right: 6px;
 
-    background: #00e676;
-
     border-radius: 50%;
+
+    background: #00e676;
 
     box-shadow:
         0 0 12px #00e676;
@@ -93,9 +95,11 @@ body {
 
 .panel,
 .telemetry-card {
-    background: rgba(11, 17, 28, 0.92);
+    background:
+        rgba(11, 17, 28, 0.92);
 
-    border: 1px solid #1b2a3d;
+    border:
+        1px solid #1b2a3d;
 
     border-radius: 9px;
 
@@ -113,6 +117,7 @@ body {
     color: #71859f;
 
     font-size: 10px;
+
     font-weight: bold;
 
     letter-spacing: 1px;
@@ -126,7 +131,7 @@ body {
 
 
 /* ==========================================================
-   MISSION
+   MISSION PANEL
    ========================================================== */
 
 .mission-panel {
@@ -182,6 +187,7 @@ body {
     color: #71859f;
 
     font-size: 10px;
+
     font-weight: bold;
 }
 
@@ -213,10 +219,331 @@ body {
     gap: 12px;
 }
 
-.rocket-panel,
+.space-panel,
 .flight-panel,
 .log-panel {
-    min-height: 290px;
+    min-height: 340px;
+}
+
+
+/* ==========================================================
+   SPACE PANEL
+   ========================================================== */
+
+.space-panel {
+    position: relative;
+
+    overflow: hidden;
+}
+
+.space-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+}
+
+.space-header h2 {
+    margin: 5px 0 0;
+
+    font-size: 20px;
+}
+
+.orbit-status {
+    padding:
+        5px 9px;
+
+    border:
+        1px solid #23415c;
+
+    border-radius: 5px;
+
+    color: #00b7ff;
+
+    font-size: 9px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+}
+
+
+/* ==========================================================
+   SPACE SCENE
+   ========================================================== */
+
+.space-scene {
+    position: relative;
+
+    width: 100%;
+    height: 300px;
+
+    margin-top: 10px;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            #101d31 0%,
+            #070d18 45%,
+            #03060b 100%
+        );
+
+    border:
+        1px solid #17283c;
+
+    border-radius: 8px;
+}
+
+.space-scene::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0.7;
+
+    background-image:
+        radial-gradient(
+            circle,
+            #ffffff 1px,
+            transparent 1px
+        );
+
+    background-size:
+        47px 47px;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   EARTH
+   ========================================================== */
+
+.earth {
+    position: absolute;
+
+    width: 145px;
+    height: 145px;
+
+    left: 50%;
+    top: 53%;
+
+    transform:
+        translate(-50%, -50%);
+
+    overflow: hidden;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #65c9ff 0%,
+            #1479bd 38%,
+            #07508a 70%,
+            #032d54 100%
+        );
+
+    box-shadow:
+        0 0 20px
+        rgba(0, 150, 255, 0.35),
+
+        0 0 50px
+        rgba(0, 120, 255, 0.15);
+
+    z-index: 3;
+
+    animation:
+        earthRotate
+        18s linear infinite;
+}
+
+@keyframes earthRotate {
+
+    0% {
+        filter:
+            brightness(0.95);
+    }
+
+    50% {
+        filter:
+            brightness(1.08);
+    }
+
+    100% {
+        filter:
+            brightness(0.95);
+    }
+}
+
+
+/* ==========================================================
+   EARTH LAND
+   ========================================================== */
+
+.earth::before {
+    content: "";
+
+    position: absolute;
+
+    width: 48px;
+    height: 30px;
+
+    left: 30px;
+    top: 35px;
+
+    background: #39a85a;
+
+    border-radius:
+        55% 45% 60% 40%;
+
+    transform:
+        rotate(-15deg);
+
+    opacity: 0.9;
+
+    box-shadow:
+        35px 35px 0 #3a9d54,
+        -10px 48px 0 #2d8b4b;
+}
+
+.earth::after {
+    content: "";
+
+    position: absolute;
+
+    width: 75px;
+    height: 20px;
+
+    left: 15px;
+    top: 18px;
+
+    background:
+        rgba(255, 255, 255, 0.25);
+
+    border-radius: 50%;
+
+    transform:
+        rotate(-25deg);
+
+    filter:
+        blur(4px);
+}
+
+
+/* ==========================================================
+   CLOUDS
+   ========================================================== */
+
+.earth-cloud {
+    position: absolute;
+
+    height: 6px;
+
+    background:
+        rgba(255, 255, 255, 0.35);
+
+    border-radius: 50%;
+
+    filter:
+        blur(2px);
+
+    z-index: 2;
+}
+
+.cloud-1 {
+    width: 65px;
+
+    left: 15px;
+    top: 75px;
+
+    transform:
+        rotate(20deg);
+}
+
+.cloud-2 {
+    width: 48px;
+
+    left: 72px;
+    top: 55px;
+
+    transform:
+        rotate(-18deg);
+}
+
+.cloud-3 {
+    width: 55px;
+
+    left: 45px;
+    top: 105px;
+
+    transform:
+        rotate(12deg);
+}
+
+
+/* ==========================================================
+   ORBIT PATH
+   ========================================================== */
+
+.orbit-path {
+    position: absolute;
+
+    width: 260px;
+    height: 120px;
+
+    left: 50%;
+    top: 53%;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(-10deg);
+
+    border:
+        1px dashed
+        rgba(0, 183, 255, 0.55);
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 10px
+        rgba(0, 183, 255, 0.08);
+
+    z-index: 2;
+
+    opacity: 0.2;
+
+    transition:
+        opacity 0.5s ease;
+}
+
+.orbit-path.active {
+    opacity: 1;
+
+    animation:
+        orbitGlow
+        2s infinite
+        ease-in-out;
+}
+
+@keyframes orbitGlow {
+
+    0% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
 }
 
 
@@ -224,52 +551,201 @@ body {
    ROCKET
    ========================================================== */
 
-.rocket-panel {
-    text-align: center;
-}
+.space-rocket {
+    position: absolute;
 
-.rocket-panel h2 {
-    text-align: left;
+    left: 50%;
+    top: 78%;
 
-    margin: 5px 0;
-}
+    transform:
+        translate(-50%, -50%);
 
-.rocket {
-    font-size: 75px;
+    font-size: 31px;
 
-    margin-top: 35px;
+    z-index: 6;
+
+    opacity: 0;
 
     transition:
-        transform 0.4s ease;
+        left 1s linear,
+        top 1s linear,
+        opacity 0.5s ease;
 }
 
-.rocket.launching {
+.space-rocket.visible {
+    opacity: 1;
+}
+
+.space-rocket.ascent {
     animation:
-        rocketLaunch 2s infinite
+        rocketAscent
+        0.8s infinite
         ease-in-out;
 }
 
-@keyframes rocketLaunch {
+.space-rocket.orbiting {
+    animation:
+        rocketOrbit
+        5s linear infinite;
+}
+
+@keyframes rocketAscent {
 
     0% {
-        transform:
-            translateY(15px);
+        filter:
+            drop-shadow(
+                0 5px 8px
+                rgba(255, 150, 0, 0.3)
+            );
     }
 
     50% {
-        transform:
-            translateY(-20px);
+        filter:
+            drop-shadow(
+                0 12px 15px
+                rgba(255, 120, 0, 0.75)
+            );
     }
 
     100% {
+        filter:
+            drop-shadow(
+                0 5px 8px
+                rgba(255, 150, 0, 0.3)
+            );
+    }
+}
+
+@keyframes rocketOrbit {
+
+    from {
         transform:
-            translateY(15px);
+            translate(-50%, -50%)
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(360deg);
     }
 }
 
 
 /* ==========================================================
-   FLIGHT
+   SATELLITE
+   ========================================================== */
+
+.satellite {
+    position: absolute;
+
+    left: 50%;
+    top: 53%;
+
+    font-size: 25px;
+
+    opacity: 0;
+
+    z-index: 7;
+
+    transform:
+        translate(-50%, -50%);
+}
+
+.satellite.deployed {
+    opacity: 1;
+
+    animation:
+        satelliteOrbit
+        7s linear infinite;
+}
+
+@keyframes satelliteOrbit {
+
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(0deg)
+            translateX(130px)
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(360deg)
+            translateX(130px)
+            rotate(-360deg);
+    }
+}
+
+
+/* ==========================================================
+   ORBIT LABELS
+   ========================================================== */
+
+.orbit-marker {
+    position: absolute;
+
+    color: #54708e;
+
+    font-family:
+        Consolas,
+        monospace;
+
+    font-size: 8px;
+
+    letter-spacing: 1px;
+
+    z-index: 8;
+}
+
+.marker-1 {
+    left: 8px;
+    top: 20px;
+}
+
+.marker-2 {
+    right: 10px;
+    bottom: 20px;
+}
+
+
+/* ==========================================================
+   ALTITUDE
+   ========================================================== */
+
+.space-altitude {
+    position: absolute;
+
+    right: 12px;
+    top: 12px;
+
+    padding:
+        5px 8px;
+
+    background:
+        rgba(2, 8, 15, 0.8);
+
+    border:
+        1px solid #1b334b;
+
+    border-radius: 4px;
+
+    color: #00e676;
+
+    font-family:
+        Consolas,
+        monospace;
+
+    font-size: 9px;
+
+    z-index: 10;
+}
+
+
+/* ==========================================================
+   FLIGHT STATUS
    ========================================================== */
 
 .flight-panel {
@@ -296,10 +772,12 @@ body {
     color: #00b7ff;
 
     font-size: 55px;
+
     font-weight: bold;
 
     text-shadow:
-        0 0 20px rgba(0, 183, 255, 0.4);
+        0 0 20px
+        rgba(0, 183, 255, 0.4);
 }
 
 
@@ -312,7 +790,7 @@ body {
 }
 
 .mission-log {
-    height: 225px;
+    height: 265px;
 
     margin-top: 15px;
 
@@ -322,13 +800,16 @@ body {
 
     background: #070d16;
 
-    border: 1px solid #18283a;
+    border:
+        1px solid #18283a;
 
     border-radius: 6px;
 
     color: #8da0b8;
 
-    font-family: Consolas, monospace;
+    font-family:
+        Consolas,
+        monospace;
 
     font-size: 10px;
 
@@ -354,6 +835,7 @@ body {
     color: #71859f;
 
     font-size: 10px;
+
     font-weight: bold;
 }
 
@@ -393,7 +875,7 @@ body {
 
 
 /* ==========================================================
-   BUTTONS
+   CONTROLS
    ========================================================== */
 
 .controls {
@@ -413,6 +895,7 @@ button {
     border-radius: 7px;
 
     font-size: 12px;
+
     font-weight: bold;
 
     cursor: pointer;
@@ -424,7 +907,8 @@ button {
 .launch-button {
     background: #123c2b;
 
-    border: 1px solid #1e8050;
+    border:
+        1px solid #1e8050;
 
     color: #6dffb0;
 }
@@ -439,7 +923,8 @@ button {
 .abort-button {
     background: #3b1518;
 
-    border: 1px solid #8d3035;
+    border:
+        1px solid #8d3035;
 
     color: #ff777d;
 }
@@ -451,7 +936,8 @@ button {
 .normal-button {
     background: #101b2a;
 
-    border: 1px solid #263a52;
+    border:
+        1px solid #263a52;
 
     color: #dce9f7;
 }
@@ -467,11 +953,29 @@ button {
    RESPONSIVE
    ========================================================== */
 
+@media (max-width: 1100px) {
+
+    .main-grid {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .log-panel {
+        grid-column:
+            1 / -1;
+    }
+}
+
 @media (max-width: 900px) {
 
     .main-grid {
         grid-template-columns:
             1fr;
+    }
+
+    .log-panel {
+        grid-column:
+            auto;
     }
 
     .telemetry-grid {
@@ -480,23 +984,26 @@ button {
     }
 
     .topbar {
-        flex-direction: column;
+        flex-direction:
+            column;
 
-        align-items: flex-start;
+        align-items:
+            flex-start;
 
         gap: 10px;
     }
 
     .system-status {
-        align-self: flex-start;
+        align-self:
+            flex-start;
     }
 }
-
 
 @media (max-width: 550px) {
 
     .app {
-        padding: 12px;
+        padding:
+            12px;
     }
 
     .telemetry-grid {
@@ -505,22 +1012,48 @@ button {
     }
 
     .mission-panel {
-        flex-direction: column;
+        flex-direction:
+            column;
 
-        align-items: flex-start;
+        align-items:
+            flex-start;
 
         gap: 15px;
     }
 
     .mission-time {
-        text-align: left;
+        text-align:
+            left;
     }
 
     .controls {
-        flex-wrap: wrap;
+        flex-wrap:
+            wrap;
     }
 
     button {
-        width: 100%;
+        width:
+            100%;
+    }
+
+    .space-scene {
+        height:
+            270px;
+    }
+
+    .earth {
+        width:
+            120px;
+
+        height:
+            120px;
+    }
+
+    .orbit-path {
+        width:
+            220px;
+
+        height:
+            105px;
     }
 }
