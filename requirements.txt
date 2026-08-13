@@ -1,6 +1,2 @@
-PySide6
-pyqtgraph
-Pillow
-pygame
 Flask
 gunicorn
