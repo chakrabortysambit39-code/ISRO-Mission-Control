@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ISRO Mission Control</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- HEADER -->
+    <header class="topbar">
+
+        <div>
+            <h1>🛰️ ISRO MISSION CONTROL</h1>
+
+            <p>
+                INDIAN SPACE RESEARCH ORGANISATION
+                • FLIGHT OPERATIONS
+            </p>
+        </div>
+
+        <div class="system-status">
+            <span class="status-dot"></span>
+            SYSTEM NOMINAL
+        </div>
+
+    </header>
+
+
+    <!-- MISSION -->
+    <section class="panel mission-panel">
+
+        <div>
+            <span class="label">
+                CURRENT MISSION
+            </span>
+
+            <h2>
+                CHANDRAYAAN-X
+            </h2>
+
+            <span class="muted">
+                LUNAR EXPLORATION • SIMULATION
+            </span>
+        </div>
+
+        <div class="mission-time">
+
+            <span class="label">
+                MISSION TIME
+            </span>
+
+            <strong id="missionTime">
+                T+ 00:00:00
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- TELEMETRY -->
+    <section class="telemetry-grid">
+
+        <div class="telemetry-card">
+            <span>ALTITUDE</span>
+            <strong id="altitude">0.0</strong>
+            <small>KM</small>
+        </div>
+
+        <div class="telemetry-card">
+            <span>VELOCITY</span>
+            <strong id="velocity">0.00</strong>
+            <small>KM/S</small>
+        </div>
+
+        <div class="telemetry-card">
+            <span>FUEL</span>
+            <strong id="fuel">100.0</strong>
+            <small>%</small>
+        </div>
+
+        <div class="telemetry-card">
+            <span>TEMPERATURE</span>
+            <strong id="temperature">28.0</strong>
+            <small>°C</small>
+        </div>
+
+    </section>
+
+
+    <!-- MAIN AREA -->
+    <section class="main-grid">
+
+
+        <!-- ROCKET -->
+        <div class="panel rocket-panel">
+
+            <span class="label">
+                LAUNCH VEHICLE
+            </span>
+
+            <h2>
+                LVM3
+            </h2>
+
+            <div
+                id="rocket"
+                class="rocket"
+            >
+                🚀
+            </div>
+
+            <div
+                id="vehicleStatus"
+                class="success-text"
+            >
+                VEHICLE READY
+            </div>
+
+        </div>
+
+
+        <!-- FLIGHT STATUS -->
+        <div class="panel flight-panel">
+
+            <span class="label">
+                FLIGHT STATUS
+            </span>
+
+            <h2
+                id="flightStatus"
+                class="success-text"
+            >
+                READY FOR LAUNCH
+            </h2>
+
+            <div
+                id="countdown"
+                class="countdown"
+            >
+                T−10
+            </div>
+
+        </div>
+
+
+        <!-- LOG -->
+        <div class="panel log-panel">
+
+            <span class="label">
+                MISSION LOG
+            </span>
+
+            <div
+                id="missionLog"
+                class="mission-log"
+            >
+
+                <div>
+                    [SYSTEM]
+                    Mission control initialized
+                </div>
+
+                <div>
+                    [SYSTEM]
+                    Telemetry link established
+                </div>
+
+                <div>
+                    [SYSTEM]
+                    Launch vehicle awaiting command
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FUEL -->
+    <section class="panel fuel-panel">
+
+        <div class="fuel-header">
+
+            <span>
+                PROPULSION FUEL
+            </span>
+
+            <strong id="fuelPercent">
+                100%
+            </strong>
+
+        </div>
+
+        <div class="fuel-track">
+
+            <div
+                id="fuelBar"
+                class="fuel-bar"
+            ></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CONTROLS -->
+    <section class="controls">
+
+        <button
+            id="launchButton"
+            class="launch-button"
+        >
+            🚀 LAUNCH
+        </button>
+
+        <button
+            id="abortButton"
+            class="abort-button"
+        >
+            ⛔ ABORT
+        </button>
+
+        <button
+            id="fullscreenButton"
+            class="normal-button"
+        >
+            ⛶ FULLSCREEN
+        </button>
+
+    </section>
+
+
+</div>
+
+
+<script
+    src="{{ url_for('static', filename='js/mission.js') }}"
+></script>
+
+</body>
+
+</html>

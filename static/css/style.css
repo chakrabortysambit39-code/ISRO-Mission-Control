@@ -1,0 +1,526 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #101b2d 0%,
+            #05080f 45%,
+            #020409 100%
+        );
+
+    color: #e8f1ff;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    min-height: 100vh;
+}
+
+
+.app {
+    width: 100%;
+    max-width: 1500px;
+
+    margin: auto;
+
+    padding: 24px;
+}
+
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+
+.topbar {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 16px;
+}
+
+.topbar h1 {
+    margin: 0;
+
+    font-size: 27px;
+    letter-spacing: 1px;
+}
+
+.topbar p {
+    margin: 5px 0 0;
+
+    color: #64758c;
+
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.system-status {
+    color: #00e676;
+
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-dot {
+    display: inline-block;
+
+    width: 8px;
+    height: 8px;
+
+    margin-right: 6px;
+
+    background: #00e676;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 12px #00e676;
+}
+
+
+/* ==========================================================
+   PANELS
+   ========================================================== */
+
+.panel,
+.telemetry-card {
+    background: rgba(11, 17, 28, 0.92);
+
+    border: 1px solid #1b2a3d;
+
+    border-radius: 9px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.panel {
+    padding: 20px;
+}
+
+.label {
+    display: block;
+
+    color: #71859f;
+
+    font-size: 10px;
+    font-weight: bold;
+
+    letter-spacing: 1px;
+}
+
+.muted {
+    color: #61738a;
+
+    font-size: 10px;
+}
+
+
+/* ==========================================================
+   MISSION
+   ========================================================== */
+
+.mission-panel {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 12px;
+}
+
+.mission-panel h2 {
+    margin: 5px 0;
+
+    font-size: 21px;
+}
+
+.mission-time {
+    text-align: right;
+}
+
+.mission-time strong {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 20px;
+}
+
+
+/* ==========================================================
+   TELEMETRY
+   ========================================================== */
+
+.telemetry-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 10px;
+
+    margin-bottom: 12px;
+}
+
+.telemetry-card {
+    padding: 16px;
+}
+
+.telemetry-card span {
+    display: block;
+
+    color: #71859f;
+
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.telemetry-card strong {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 27px;
+}
+
+.telemetry-card small {
+    color: #50627a;
+
+    font-size: 9px;
+}
+
+
+/* ==========================================================
+   MAIN GRID
+   ========================================================== */
+
+.main-grid {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr 1fr;
+
+    gap: 12px;
+}
+
+.rocket-panel,
+.flight-panel,
+.log-panel {
+    min-height: 290px;
+}
+
+
+/* ==========================================================
+   ROCKET
+   ========================================================== */
+
+.rocket-panel {
+    text-align: center;
+}
+
+.rocket-panel h2 {
+    text-align: left;
+
+    margin: 5px 0;
+}
+
+.rocket {
+    font-size: 75px;
+
+    margin-top: 35px;
+
+    transition:
+        transform 0.4s ease;
+}
+
+.rocket.launching {
+    animation:
+        rocketLaunch 2s infinite
+        ease-in-out;
+}
+
+@keyframes rocketLaunch {
+
+    0% {
+        transform:
+            translateY(15px);
+    }
+
+    50% {
+        transform:
+            translateY(-20px);
+    }
+
+    100% {
+        transform:
+            translateY(15px);
+    }
+}
+
+
+/* ==========================================================
+   FLIGHT
+   ========================================================== */
+
+.flight-panel {
+    text-align: center;
+}
+
+.flight-panel .label {
+    text-align: left;
+}
+
+.success-text {
+    color: #00e676;
+
+    font-weight: bold;
+}
+
+.flight-panel h2 {
+    margin-top: 25px;
+}
+
+.countdown {
+    margin-top: 35px;
+
+    color: #00b7ff;
+
+    font-size: 55px;
+    font-weight: bold;
+
+    text-shadow:
+        0 0 20px rgba(0, 183, 255, 0.4);
+}
+
+
+/* ==========================================================
+   LOG
+   ========================================================== */
+
+.log-panel {
+    overflow: hidden;
+}
+
+.mission-log {
+    height: 225px;
+
+    margin-top: 15px;
+
+    padding: 12px;
+
+    overflow-y: auto;
+
+    background: #070d16;
+
+    border: 1px solid #18283a;
+
+    border-radius: 6px;
+
+    color: #8da0b8;
+
+    font-family: Consolas, monospace;
+
+    font-size: 10px;
+
+    line-height: 1.8;
+}
+
+
+/* ==========================================================
+   FUEL
+   ========================================================== */
+
+.fuel-panel {
+    margin-top: 12px;
+}
+
+.fuel-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 8px;
+
+    color: #71859f;
+
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.fuel-header strong {
+    color: #e8f1ff;
+}
+
+.fuel-track {
+    width: 100%;
+
+    height: 9px;
+
+    overflow: hidden;
+
+    background: #101a28;
+
+    border-radius: 5px;
+}
+
+.fuel-bar {
+    width: 100%;
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #00aaff,
+            #00e676
+        );
+
+    border-radius: 5px;
+
+    transition:
+        width 0.4s ease;
+}
+
+
+/* ==========================================================
+   BUTTONS
+   ========================================================== */
+
+.controls {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-top: 15px;
+}
+
+button {
+    padding:
+        13px 28px;
+
+    border-radius: 7px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        0.2s ease;
+}
+
+.launch-button {
+    background: #123c2b;
+
+    border: 1px solid #1e8050;
+
+    color: #6dffb0;
+}
+
+.launch-button:hover {
+    background: #185a3d;
+
+    transform:
+        translateY(-1px);
+}
+
+.abort-button {
+    background: #3b1518;
+
+    border: 1px solid #8d3035;
+
+    color: #ff777d;
+}
+
+.abort-button:hover {
+    background: #591d22;
+}
+
+.normal-button {
+    background: #101b2a;
+
+    border: 1px solid #263a52;
+
+    color: #dce9f7;
+}
+
+.normal-button:hover {
+    border-color: #00aaff;
+
+    background: #16283c;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 900px) {
+
+    .main-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+    .telemetry-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .topbar {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+    .system-status {
+        align-self: flex-start;
+    }
+}
+
+
+@media (max-width: 550px) {
+
+    .app {
+        padding: 12px;
+    }
+
+    .telemetry-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+    .mission-panel {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+    .mission-time {
+        text-align: left;
+    }
+
+    .controls {
+        flex-wrap: wrap;
+    }
+
+    button {
+        width: 100%;
+    }
+}
