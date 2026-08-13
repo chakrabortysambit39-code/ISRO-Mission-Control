@@ -11,7 +11,6 @@
 
     <title>ISRO Mission Control</title>
 
-    <!-- Chart.js -->
     <script
         src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"
     ></script>
@@ -26,17 +25,15 @@
 
 <div class="app">
 
-    <!-- ======================================================
+    <!-- =====================================================
          HEADER
-         ====================================================== -->
+         ===================================================== -->
 
     <header class="topbar">
 
         <div>
 
-            <h1>
-                🛰️ ISRO MISSION CONTROL
-            </h1>
+            <h1>ISRO MISSION CONTROL</h1>
 
             <p>
                 INDIAN SPACE RESEARCH ORGANISATION
@@ -56,9 +53,9 @@
     </header>
 
 
-    <!-- ======================================================
+    <!-- =====================================================
          MISSION INFORMATION
-         ====================================================== -->
+         ===================================================== -->
 
     <section class="panel mission-panel">
 
@@ -93,9 +90,9 @@
     </section>
 
 
-    <!-- ======================================================
+    <!-- =====================================================
          TELEMETRY CARDS
-         ====================================================== -->
+         ===================================================== -->
 
     <section class="telemetry-grid">
 
@@ -169,9 +166,9 @@
     </section>
 
 
-    <!-- ======================================================
-         LIVE TELEMETRY GRAPHS
-         ====================================================== -->
+    <!-- =====================================================
+         LIVE TELEMETRY
+         ===================================================== -->
 
     <section class="panel graphs-panel">
 
@@ -202,8 +199,6 @@
         <div class="graphs-grid">
 
 
-            <!-- ALTITUDE -->
-
             <div class="graph-card">
 
                 <div class="graph-title">
@@ -229,8 +224,6 @@
             </div>
 
 
-            <!-- VELOCITY -->
-
             <div class="graph-card">
 
                 <div class="graph-title">
@@ -255,8 +248,6 @@
 
             </div>
 
-
-            <!-- FUEL -->
 
             <div class="graph-card">
 
@@ -287,16 +278,516 @@
     </section>
 
 
-    <!-- ======================================================
-         MAIN MISSION AREA
-         ====================================================== -->
+    <!-- =====================================================
+         MAIN OPERATIONS
+         ===================================================== -->
 
     <section class="main-grid">
 
 
-        <!-- ==================================================
-             EARTH + ORBIT
-             ================================================== -->
+        <!-- =================================================
+             LAUNCH VEHICLE
+             ================================================= -->
+
+        <div class="panel vehicle-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="label">
+                        LAUNCH VEHICLE
+                    </span>
+
+                    <h2>
+                        LVM3
+                    </h2>
+
+                </div>
+
+                <div
+                    id="vehicleIndicator"
+                    class="vehicle-indicator"
+                >
+                    READY
+                </div>
+
+            </div>
+
+
+            <div
+                id="vehicleScene"
+                class="vehicle-scene"
+            >
+
+                <!-- Technical background -->
+
+                <div class="scene-grid"></div>
+
+                <div class="scene-crosshair"></div>
+
+
+                <!-- =================================================
+                     LAUNCH TOWER
+                     ================================================= -->
+
+                <div
+                    id="launchTower"
+                    class="launch-tower"
+                >
+
+                    <div class="tower-main"></div>
+
+                    <div
+                        class="tower-leg tower-leg-left"
+                    ></div>
+
+                    <div
+                        class="tower-leg tower-leg-right"
+                    ></div>
+
+                    <div
+                        class="tower-platform platform-1"
+                    ></div>
+
+                    <div
+                        class="tower-platform platform-2"
+                    ></div>
+
+                    <div
+                        class="tower-platform platform-3"
+                    ></div>
+
+                </div>
+
+
+                <!-- =================================================
+                     LAUNCH VEHICLE SVG
+                     ================================================= -->
+
+                <div
+                    id="vehicle"
+                    class="vehicle ready"
+                >
+
+                    <svg
+                        class="vehicle-svg"
+                        viewBox="0 0 180 500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-label="Launch vehicle"
+                    >
+
+                        <!-- ================================
+                             NOSE / FAIRING
+                             ================================= -->
+
+                        <path
+                            d="
+                                M90 8
+                                C72 24 59 47 54 73
+                                L126 73
+                                C121 47 108 24 90 8
+                                Z
+                            "
+                            class="rocket-shell"
+                        />
+
+
+                        <!-- =================================
+                             PAYLOAD FAIRING
+                             ================================= -->
+
+                        <rect
+                            x="58"
+                            y="70"
+                            width="64"
+                            height="72"
+                            rx="18"
+                            class="rocket-fairing"
+                        />
+
+
+                        <!-- =================================
+                             SEPARATION RING
+                             ================================= -->
+
+                        <rect
+                            x="50"
+                            y="139"
+                            width="80"
+                            height="8"
+                            class="rocket-ring"
+                        />
+
+
+                        <!-- =================================
+                             CORE STAGE
+                             ================================= -->
+
+                        <rect
+                            x="61"
+                            y="147"
+                            width="58"
+                            height="188"
+                            rx="7"
+                            class="rocket-core"
+                        />
+
+
+                        <!-- Vehicle markings -->
+
+                        <rect
+                            x="70"
+                            y="164"
+                            width="40"
+                            height="3"
+                            class="rocket-marking"
+                        />
+
+                        <rect
+                            x="70"
+                            y="178"
+                            width="30"
+                            height="3"
+                            class="rocket-marking"
+                        />
+
+
+                        <text
+                            x="90"
+                            y="218"
+                            text-anchor="middle"
+                            class="rocket-label"
+                        >
+                            ISRO
+                        </text>
+
+
+                        <text
+                            x="90"
+                            y="235"
+                            text-anchor="middle"
+                            class="rocket-label-small"
+                        >
+                            LVM3
+                        </text>
+
+
+                        <!-- =================================
+                             LEFT BOOSTER
+                             ================================= -->
+
+                        <path
+                            d="
+                                M42 155
+                                C30 169 26 189 28 218
+                                L40 316
+                                C41 326 48 332 57 332
+                                L62 332
+                                L62 155
+                                Z
+                            "
+                            class="booster"
+                        />
+
+
+                        <!-- =================================
+                             RIGHT BOOSTER
+                             ================================= -->
+
+                        <path
+                            d="
+                                M138 155
+                                C150 169 154 189 152 218
+                                L140 316
+                                C139 326 132 332 123 332
+                                L118 332
+                                L118 155
+                                Z
+                            "
+                            class="booster"
+                        />
+
+
+                        <!-- Booster rings -->
+
+                        <rect
+                            x="31"
+                            y="208"
+                            width="27"
+                            height="7"
+                            class="booster-ring"
+                        />
+
+                        <rect
+                            x="122"
+                            y="208"
+                            width="27"
+                            height="7"
+                            class="booster-ring"
+                        />
+
+
+                        <!-- =================================
+                             INTERSTAGE
+                             ================================= -->
+
+                        <rect
+                            x="55"
+                            y="331"
+                            width="70"
+                            height="19"
+                            rx="3"
+                            class="rocket-interstage"
+                        />
+
+
+                        <!-- =================================
+                             ENGINE SECTION
+                             ================================= -->
+
+                        <rect
+                            x="58"
+                            y="349"
+                            width="64"
+                            height="25"
+                            rx="5"
+                            class="engine-body"
+                        />
+
+
+                        <!-- =================================
+                             ENGINES
+                             ================================= -->
+
+                        <circle
+                            cx="70"
+                            cy="376"
+                            r="9"
+                            class="engine"
+                        />
+
+                        <circle
+                            cx="90"
+                            cy="379"
+                            r="10"
+                            class="engine"
+                        />
+
+                        <circle
+                            cx="110"
+                            cy="376"
+                            r="9"
+                            class="engine"
+                        />
+
+
+                        <!-- =================================
+                             REALISTIC EXHAUST SYSTEM
+                             ================================= -->
+
+                        <g
+                            id="rocketExhaust"
+                            class="rocket-exhaust"
+                        >
+
+                            <!-- Soft glow around engine exit -->
+
+                            <ellipse
+                                cx="90"
+                                cy="394"
+                                rx="21"
+                                ry="9"
+                                class="exhaust-glow"
+                            />
+
+
+                            <!-- Outer plume -->
+
+                            <path
+                                d="
+                                    M70 384
+
+                                    C70 404
+                                    74 426
+                                    80 446
+
+                                    C84 458
+                                    87 475
+                                    90 495
+
+                                    C93 475
+                                    96 458
+                                    100 446
+
+                                    C106 426
+                                    110 404
+                                    110 384
+
+                                    Z
+                                "
+                                class="exhaust-outer"
+                            />
+
+
+                            <!-- Middle hot plume -->
+
+                            <path
+                                d="
+                                    M78 385
+
+                                    C79 405
+                                    83 426
+                                    86 445
+
+                                    C88 456
+                                    89 468
+                                    90 484
+
+                                    C91 468
+                                    92 456
+                                    94 445
+
+                                    C97 426
+                                    101 405
+                                    102 385
+
+                                    Z
+                                "
+                                class="exhaust-middle"
+                            />
+
+
+                            <!-- White-hot central core -->
+
+                            <path
+                                d="
+                                    M85 385
+
+                                    C86 402
+                                    88 420
+                                    89 437
+
+                                    C89.5 446
+                                    90 456
+                                    90 466
+
+                                    C90 456
+                                    90.5 446
+                                    91 437
+
+                                    C92 420
+                                    94 402
+                                    95 385
+
+                                    Z
+                                "
+                                class="exhaust-core"
+                            />
+
+
+                            <!-- Small turbulent plume -->
+
+                            <path
+                                d="
+                                    M76 390
+                                    C73 418
+                                    77 439
+                                    82 456
+                                    C78 446
+                                    73 428
+                                    70 411
+                                    Z
+                                "
+                                class="exhaust-turbulence turbulence-left"
+                            />
+
+
+                            <path
+                                d="
+                                    M104 390
+                                    C107 418
+                                    103 439
+                                    98 456
+                                    C102 446
+                                    107 428
+                                    110 411
+                                    Z
+                                "
+                                class="exhaust-turbulence turbulence-right"
+                            />
+
+                        </g>
+
+                    </svg>
+
+                </div>
+
+
+                <!-- =============================================
+                     LAUNCH PAD
+                     ============================================= -->
+
+                <div class="launch-pad">
+
+                    <div class="pad-platform"></div>
+
+                    <div
+                        class="pad-leg pad-leg-1"
+                    ></div>
+
+                    <div
+                        class="pad-leg pad-leg-2"
+                    ></div>
+
+                    <div
+                        class="pad-leg pad-leg-3"
+                    ></div>
+
+                    <div
+                        class="pad-leg pad-leg-4"
+                    ></div>
+
+                    <div class="flame-trench"></div>
+
+                </div>
+
+
+                <!-- =============================================
+                     VEHICLE READOUT
+                     ============================================= -->
+
+                <div
+                    id="vehicleReadout"
+                    class="vehicle-readout"
+                >
+
+                    VEHICLE STATUS
+
+                    <strong
+                        id="vehicleStatusText"
+                    >
+                        READY
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="stageStatus"
+                class="stage-status"
+            >
+                STAGE CONFIGURATION: STANDBY
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             EARTH / ORBIT
+             ================================================= -->
 
         <div class="panel space-panel">
 
@@ -355,19 +846,68 @@
                 </div>
 
 
+                <!-- Small technical orbital vehicle -->
+
                 <div
                     id="spaceRocket"
                     class="space-rocket"
-                >
-                    🚀
-                </div>
+                ></div>
 
+
+                <!-- Satellite -->
 
                 <div
                     id="satellite"
                     class="satellite"
                 >
-                    🛰️
+
+                    <svg
+                        viewBox="0 0 80 50"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+
+                        <rect
+                            x="30"
+                            y="17"
+                            width="20"
+                            height="16"
+                            rx="2"
+                            class="sat-body"
+                        />
+
+                        <rect
+                            x="2"
+                            y="12"
+                            width="24"
+                            height="8"
+                            class="sat-panel"
+                        />
+
+                        <rect
+                            x="54"
+                            y="12"
+                            width="24"
+                            height="8"
+                            class="sat-panel"
+                        />
+
+                        <line
+                            x1="40"
+                            y1="17"
+                            x2="40"
+                            y2="6"
+                            class="sat-antenna"
+                        />
+
+                        <circle
+                            cx="40"
+                            cy="5"
+                            r="2"
+                            class="sat-signal"
+                        />
+
+                    </svg>
+
                 </div>
 
 
@@ -394,26 +934,19 @@
 
             </div>
 
-
-            <div
-                id="vehicleStatus"
-                class="success-text"
-            >
-                VEHICLE READY
-            </div>
-
         </div>
 
 
-        <!-- ==================================================
-             FLIGHT STATUS
-             ================================================== -->
+        <!-- =================================================
+             FLIGHT STATUS / LOG
+             ================================================= -->
 
         <div class="panel flight-panel">
 
             <span class="label">
                 FLIGHT STATUS
             </span>
+
 
             <h2
                 id="flightStatus"
@@ -422,12 +955,14 @@
                 READY FOR LAUNCH
             </h2>
 
+
             <div
                 id="countdown"
                 class="countdown"
             >
                 T−10
             </div>
+
 
             <div
                 id="phaseIndicator"
@@ -436,37 +971,36 @@
                 PRE-LAUNCH
             </div>
 
-        </div>
-
-
-        <!-- ==================================================
-             MISSION LOG
-             ================================================== -->
-
-        <div class="panel log-panel">
-
-            <span class="label">
-                MISSION LOG
-            </span>
 
             <div
-                id="missionLog"
-                class="mission-log"
+                class="mission-log-container"
             >
 
-                <div>
-                    [SYSTEM]
-                    Mission control initialized
-                </div>
+                <span class="label">
+                    MISSION LOG
+                </span>
 
-                <div>
-                    [SYSTEM]
-                    Telemetry link established
-                </div>
 
-                <div>
-                    [SYSTEM]
-                    Launch vehicle awaiting command
+                <div
+                    id="missionLog"
+                    class="mission-log"
+                >
+
+                    <div>
+                        [SYSTEM]
+                        Mission control initialized
+                    </div>
+
+                    <div>
+                        [SYSTEM]
+                        Telemetry link established
+                    </div>
+
+                    <div>
+                        [SYSTEM]
+                        Launch vehicle awaiting command
+                    </div>
+
                 </div>
 
             </div>
@@ -476,9 +1010,9 @@
     </section>
 
 
-    <!-- ======================================================
-         FUEL BAR
-         ====================================================== -->
+    <!-- =====================================================
+         FUEL
+         ===================================================== -->
 
     <section class="panel fuel-panel">
 
@@ -488,11 +1022,14 @@
                 PROPULSION FUEL
             </span>
 
-            <strong id="fuelPercent">
+            <strong
+                id="fuelPercent"
+            >
                 100%
             </strong>
 
         </div>
+
 
         <div class="fuel-track">
 
@@ -506,9 +1043,9 @@
     </section>
 
 
-    <!-- ======================================================
+    <!-- =====================================================
          CONTROLS
-         ====================================================== -->
+         ===================================================== -->
 
     <section class="controls">
 
@@ -516,21 +1053,23 @@
             id="launchButton"
             class="launch-button"
         >
-            🚀 LAUNCH
+            LAUNCH
         </button>
+
 
         <button
             id="abortButton"
             class="abort-button"
         >
-            ⛔ ABORT
+            ABORT
         </button>
+
 
         <button
             id="fullscreenButton"
             class="normal-button"
         >
-            ⛶ FULLSCREEN
+            FULLSCREEN
         </button>
 
     </section>

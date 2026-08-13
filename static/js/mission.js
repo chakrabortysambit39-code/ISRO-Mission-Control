@@ -1,19 +1,20 @@
-let running = false;
+"use strict";
 
+/* ==========================================================
+   MISSION STATE
+   ========================================================== */
+
+let running = false;
 let phase = "IDLE";
 
 let countdown = 10;
 
 let altitude = 0;
-
 let velocity = 0;
-
 let fuel = 100;
-
 let temperature = 28;
 
 let orbitSeconds = 0;
-
 let missionSeconds = 0;
 
 let timer = null;
@@ -24,7 +25,6 @@ let timer = null;
    ========================================================== */
 
 let audioContext = null;
-
 let finalSong = null;
 
 
@@ -32,23 +32,18 @@ let finalSong = null;
    CHART DATA
    ========================================================== */
 
-let chartLabels = [];
-
-let altitudeData = [];
-
-let velocityData = [];
-
-let fuelData = [];
+const chartLabels = [];
+const altitudeData = [];
+const velocityData = [];
+const fuelData = [];
 
 let altitudeChart = null;
-
 let velocityChart = null;
-
 let fuelChart = null;
 
 
 /* ==========================================================
-   ELEMENTS
+   DOM ELEMENTS
    ========================================================== */
 
 const countdownElement =
@@ -78,441 +73,68 @@ const fuelBar =
 const fuelPercent =
     document.getElementById("fuelPercent");
 
-const missionLog =
-    document.getElementById("missionLog");
-
 const missionTime =
     document.getElementById("missionTime");
+
+const missionLog =
+    document.getElementById("missionLog");
 
 const graphStatus =
     document.getElementById("graphStatus");
 
 
 /* ==========================================================
-   SPACE ELEMENTS
+   V2.1 EARTH / ORBIT ELEMENTS
    ========================================================== */
 
 const spaceRocket =
-    document.getElementById(
-        "spaceRocket"
-    );
+    document.getElementById("spaceRocket");
 
 const satellite =
-    document.getElementById(
-        "satellite"
-    );
+    document.getElementById("satellite");
 
 const orbitPath =
-    document.getElementById(
-        "orbitPath"
-    );
+    document.getElementById("orbitPath");
 
 const orbitStatus =
-    document.getElementById(
-        "orbitStatus"
-    );
+    document.getElementById("orbitStatus");
 
 const spaceAltitude =
-    document.getElementById(
-        "spaceAltitude"
-    );
+    document.getElementById("spaceAltitude");
 
 
 /* ==========================================================
-   INITIALIZE CHARTS
+   V2.3 VEHICLE ELEMENTS
    ========================================================== */
 
-function initializeCharts() {
+const vehicle =
+    document.getElementById("vehicle");
 
-    if (
-        typeof Chart ===
-        "undefined"
-    ) {
+const vehicleIndicator =
+    document.getElementById("vehicleIndicator");
 
-        console.error(
-            "Chart.js failed to load."
-        );
+const vehicleStatusText =
+    document.getElementById("vehicleStatusText");
 
-        return;
-    }
+const stageStatus =
+    document.getElementById("stageStatus");
 
+const launchTower =
+    document.getElementById("launchTower");
 
-    const commonOptions = {
-
-        responsive: true,
-
-        maintainAspectRatio: false,
-
-        animation: false,
-
-        interaction: {
-            intersect: false,
-
-            mode: "index"
-        },
-
-        plugins: {
-
-            legend: {
-                display: false
-            },
-
-            tooltip: {
-                backgroundColor:
-                    "#08101b",
-
-                borderColor:
-                    "#29425e",
-
-                borderWidth:
-                    1,
-
-                titleColor:
-                    "#dce9f7",
-
-                bodyColor:
-                    "#8da0b8",
-
-                displayColors:
-                    false
-            }
-        },
-
-        scales: {
-
-            x: {
-
-                grid: {
-                    color:
-                        "rgba(60, 90, 120, 0.12)"
-                },
-
-                ticks: {
-                    color:
-                        "#52667e",
-
-                    font: {
-                        size: 8
-                    },
-
-                    maxTicksLimit:
-                        8
-                }
-            },
-
-            y: {
-
-                beginAtZero:
-                    true,
-
-                grid: {
-                    color:
-                        "rgba(60, 90, 120, 0.12)"
-                },
-
-                ticks: {
-                    color:
-                        "#52667e",
-
-                    font: {
-                        size: 8
-                    }
-                }
-            }
-        }
-    };
-
-
-    altitudeChart =
-        new Chart(
-            document.getElementById(
-                "altitudeChart"
-            ),
-            {
-
-                type: "line",
-
-                data: {
-
-                    labels:
-                        chartLabels,
-
-                    datasets: [
-
-                        {
-                            data:
-                                altitudeData,
-
-                            borderColor:
-                                "#00b7ff",
-
-                            backgroundColor:
-                                "rgba(0,183,255,0.08)",
-
-                            borderWidth:
-                                2,
-
-                            pointRadius:
-                                0,
-
-                            fill:
-                                true,
-
-                            tension:
-                                0.25
-                        }
-
-                    ]
-                },
-
-                options:
-                    commonOptions
-            }
-        );
-
-
-    velocityChart =
-        new Chart(
-            document.getElementById(
-                "velocityChart"
-            ),
-            {
-
-                type: "line",
-
-                data: {
-
-                    labels:
-                        chartLabels,
-
-                    datasets: [
-
-                        {
-                            data:
-                                velocityData,
-
-                            borderColor:
-                                "#00e676",
-
-                            backgroundColor:
-                                "rgba(0,230,118,0.07)",
-
-                            borderWidth:
-                                2,
-
-                            pointRadius:
-                                0,
-
-                            fill:
-                                true,
-
-                            tension:
-                                0.25
-                        }
-
-                    ]
-                },
-
-                options:
-                    commonOptions
-            }
-        );
-
-
-    fuelChart =
-        new Chart(
-            document.getElementById(
-                "fuelChart"
-            ),
-            {
-
-                type: "line",
-
-                data: {
-
-                    labels:
-                        chartLabels,
-
-                    datasets: [
-
-                        {
-                            data:
-                                fuelData,
-
-                            borderColor:
-                                "#ffb020",
-
-                            backgroundColor:
-                                "rgba(255,176,32,0.07)",
-
-                            borderWidth:
-                                2,
-
-                            pointRadius:
-                                0,
-
-                            fill:
-                                true,
-
-                            tension:
-                                0.2
-                        }
-
-                    ]
-                },
-
-                options:
-                    {
-
-                        ...commonOptions,
-
-                        scales: {
-
-                            ...commonOptions.scales,
-
-                            y: {
-
-                                ...commonOptions.scales.y,
-
-                                min:
-                                    0,
-
-                                max:
-                                    100
-                            }
-                        }
-                    }
-            }
-        );
-}
+const rocketExhaust =
+    document.getElementById("rocketExhaust");
 
 
 /* ==========================================================
-   RESET CHARTS
+   SAFE DOM HELPER
    ========================================================== */
 
-function resetCharts() {
+function setText(element, value) {
 
-    chartLabels.length = 0;
-
-    altitudeData.length = 0;
-
-    velocityData.length = 0;
-
-    fuelData.length = 0;
-
-    if (
-        altitudeChart
-    ) {
-
-        altitudeChart.update(
-            "none"
-        );
+    if (element) {
+        element.textContent = value;
     }
-
-    if (
-        velocityChart
-    ) {
-
-        velocityChart.update(
-            "none"
-        );
-    }
-
-    if (
-        fuelChart
-    ) {
-
-        fuelChart.update(
-            "none"
-        );
-    }
-
-    graphStatus.textContent =
-        "STANDBY";
-
-    graphStatus.classList.remove(
-        "active"
-    );
-}
-
-
-/* ==========================================================
-   UPDATE CHARTS
-   ========================================================== */
-
-function updateCharts() {
-
-    if (
-        !altitudeChart ||
-        !velocityChart ||
-        !fuelChart
-    ) {
-        return;
-    }
-
-
-    chartLabels.push(
-        `T+${missionSeconds}s`
-    );
-
-    altitudeData.push(
-        Number(
-            altitude.toFixed(2)
-        )
-    );
-
-    velocityData.push(
-        Number(
-            velocity.toFixed(3)
-        )
-    );
-
-    fuelData.push(
-        Number(
-            fuel.toFixed(2)
-        )
-    );
-
-
-    /*
-     * Keep the charts readable.
-     * Maximum 90 points.
-     */
-
-    if (
-        chartLabels.length > 90
-    ) {
-
-        chartLabels.shift();
-
-        altitudeData.shift();
-
-        velocityData.shift();
-
-        fuelData.shift();
-    }
-
-
-    altitudeChart.update(
-        "none"
-    );
-
-    velocityChart.update(
-        "none"
-    );
-
-    fuelChart.update(
-        "none"
-    );
-
-
-    graphStatus.textContent =
-        "LIVE";
-
-    graphStatus.classList.add(
-        "active"
-    );
 }
 
 
@@ -534,8 +156,7 @@ function initializeAudio() {
         }
 
         if (
-            audioContext.state ===
-            "suspended"
+            audioContext.state === "suspended"
         ) {
 
             audioContext.resume();
@@ -543,7 +164,7 @@ function initializeAudio() {
 
     } catch (error) {
 
-        console.log(
+        console.error(
             "Audio initialization error:",
             error
         );
@@ -552,7 +173,7 @@ function initializeAudio() {
 
 
 /* ==========================================================
-   COUNTDOWN BEEP
+   ELECTRONIC COUNTDOWN BEEP
    ========================================================== */
 
 function countdownBeep() {
@@ -583,7 +204,7 @@ function countdownBeep() {
         );
 
         gain.gain.exponentialRampToValueAtTime(
-            0.25,
+            0.22,
             audioContext.currentTime + 0.01
         );
 
@@ -592,10 +213,7 @@ function countdownBeep() {
             audioContext.currentTime + 0.12
         );
 
-        oscillator.connect(
-            gain
-        );
-
+        oscillator.connect(gain);
         gain.connect(
             audioContext.destination
         );
@@ -603,14 +221,13 @@ function countdownBeep() {
         oscillator.start();
 
         oscillator.stop(
-            audioContext.currentTime +
-            0.13
+            audioContext.currentTime + 0.13
         );
 
     } catch (error) {
 
-        console.log(
-            "Countdown sound error:",
+        console.error(
+            "Countdown beep error:",
             error
         );
     }
@@ -639,13 +256,13 @@ function ignitionSound() {
             "sawtooth";
 
         oscillator.frequency.setValueAtTime(
-            250,
+            220,
             audioContext.currentTime
         );
 
         oscillator.frequency.exponentialRampToValueAtTime(
-            1000,
-            audioContext.currentTime + 0.8
+            1100,
+            audioContext.currentTime + 0.9
         );
 
         gain.gain.setValueAtTime(
@@ -654,19 +271,16 @@ function ignitionSound() {
         );
 
         gain.gain.exponentialRampToValueAtTime(
-            0.35,
-            audioContext.currentTime + 0.05
+            0.36,
+            audioContext.currentTime + 0.06
         );
 
         gain.gain.exponentialRampToValueAtTime(
             0.0001,
-            audioContext.currentTime + 0.9
+            audioContext.currentTime + 0.95
         );
 
-        oscillator.connect(
-            gain
-        );
-
+        oscillator.connect(gain);
         gain.connect(
             audioContext.destination
         );
@@ -674,13 +288,12 @@ function ignitionSound() {
         oscillator.start();
 
         oscillator.stop(
-            audioContext.currentTime +
-            0.95
+            audioContext.currentTime + 1.0
         );
 
     } catch (error) {
 
-        console.log(
+        console.error(
             "Ignition sound error:",
             error
         );
@@ -710,13 +323,13 @@ function deploymentSound() {
             "sine";
 
         oscillator.frequency.setValueAtTime(
-            500,
+            450,
             audioContext.currentTime
         );
 
         oscillator.frequency.exponentialRampToValueAtTime(
-            1400,
-            audioContext.currentTime + 0.6
+            1500,
+            audioContext.currentTime + 0.65
         );
 
         gain.gain.setValueAtTime(
@@ -725,19 +338,16 @@ function deploymentSound() {
         );
 
         gain.gain.exponentialRampToValueAtTime(
-            0.25,
-            audioContext.currentTime + 0.05
+            0.24,
+            audioContext.currentTime + 0.04
         );
 
         gain.gain.exponentialRampToValueAtTime(
             0.0001,
-            audioContext.currentTime + 0.7
+            audioContext.currentTime + 0.75
         );
 
-        oscillator.connect(
-            gain
-        );
-
+        oscillator.connect(gain);
         gain.connect(
             audioContext.destination
         );
@@ -745,13 +355,12 @@ function deploymentSound() {
         oscillator.start();
 
         oscillator.stop(
-            audioContext.currentTime +
-            0.75
+            audioContext.currentTime + 0.8
         );
 
     } catch (error) {
 
-        console.log(
+        console.error(
             "Deployment sound error:",
             error
         );
@@ -760,24 +369,22 @@ function deploymentSound() {
 
 
 /* ==========================================================
-   SONG
+   FINAL SONG
    ========================================================== */
 
 function prepareSong() {
 
-    if (!finalSong) {
-
-        finalSong =
-            new Audio(
-                "/static/assets/maa_tujhe_salaam.mp3"
-            );
-
-        finalSong.preload =
-            "auto";
-
-        finalSong.volume =
-            1.0;
+    if (finalSong) {
+        return;
     }
+
+    finalSong =
+        new Audio(
+            "/static/assets/maa_tujhe_salaam.mp3"
+        );
+
+    finalSong.preload = "auto";
+    finalSong.volume = 1.0;
 }
 
 function playFinalSong() {
@@ -788,35 +395,33 @@ function playFinalSong() {
         return;
     }
 
-    finalSong.currentTime =
-        0;
+    finalSong.currentTime = 0;
 
-    const result =
+    const playback =
         finalSong.play();
 
     if (
-        result !== undefined
+        playback &&
+        typeof playback.catch === "function"
     ) {
 
-        result.catch(
-            error => {
+        playback.catch(error => {
 
-                console.log(
-                    "Song playback blocked:",
-                    error
-                );
+            console.error(
+                "Song playback blocked:",
+                error
+            );
 
-                log(
-                    "AUDIO",
-                    "Song playback was blocked."
-                );
-            }
-        );
+            log(
+                "AUDIO",
+                "Patriotic audio playback was blocked by the browser."
+            );
+        });
     }
 
     log(
         "AUDIO",
-        "MAA TUJHE SALAAM PLAYBACK STARTED"
+        "PATRIOTIC AUDIO PLAYBACK STARTED"
     );
 }
 
@@ -827,9 +432,54 @@ function stopFinalSong() {
     }
 
     finalSong.pause();
+    finalSong.currentTime = 0;
+}
 
-    finalSong.currentTime =
-        0;
+
+/* ==========================================================
+   BROWSER VOICE
+   ========================================================== */
+
+function speak(text) {
+
+    if (
+        !("speechSynthesis" in window)
+    ) {
+
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance =
+        new SpeechSynthesisUtterance(text);
+
+    utterance.rate = 0.9;
+    utterance.pitch = 0.95;
+    utterance.volume = 1.0;
+
+    const voices =
+        window.speechSynthesis.getVoices();
+
+    const preferredVoice =
+        voices.find(
+            voice =>
+                voice.lang === "en-IN"
+        ) ||
+        voices.find(
+            voice =>
+                voice.lang &&
+                voice.lang.startsWith("en")
+        );
+
+    if (preferredVoice) {
+        utterance.voice =
+            preferredVoice;
+    }
+
+    window.speechSynthesis.speak(
+        utterance
+    );
 }
 
 
@@ -837,22 +487,19 @@ function stopFinalSong() {
    LOG
    ========================================================== */
 
-function log(
-    source,
-    message
-) {
+function log(source, message) {
+
+    if (!missionLog) {
+        return;
+    }
 
     const line =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
     line.textContent =
         `[${source}] ${message}`;
 
-    missionLog.appendChild(
-        line
-    );
+    missionLog.appendChild(line);
 
     missionLog.scrollTop =
         missionLog.scrollHeight;
@@ -865,23 +512,46 @@ function log(
 
 function updateTelemetry() {
 
-    altitudeElement.textContent =
-        altitude.toFixed(1);
+    setText(
+        altitudeElement,
+        altitude.toFixed(1)
+    );
 
-    velocityElement.textContent =
-        velocity.toFixed(2);
+    setText(
+        velocityElement,
+        velocity.toFixed(2)
+    );
 
-    fuelElement.textContent =
-        fuel.toFixed(1);
+    setText(
+        fuelElement,
+        fuel.toFixed(1)
+    );
 
-    temperatureElement.textContent =
-        temperature.toFixed(1);
+    setText(
+        temperatureElement,
+        temperature.toFixed(1)
+    );
 
-    fuelBar.style.width =
-        `${Math.max(0, fuel)}%`;
+    const safeFuel =
+        Math.max(
+            0,
+            Math.min(100, fuel)
+        );
 
-    fuelPercent.textContent =
-        `${Math.max(0, fuel).toFixed(0)}%`;
+    if (fuelBar) {
+        fuelBar.style.width =
+            `${safeFuel}%`;
+    }
+
+    setText(
+        fuelPercent,
+        `${safeFuel.toFixed(0)}%`
+    );
+
+    setText(
+        spaceAltitude,
+        `ALT ${altitude.toFixed(1)} KM`
+    );
 }
 
 
@@ -904,228 +574,22 @@ function updateMissionClock() {
     const seconds =
         missionSeconds % 60;
 
-    missionTime.textContent =
+    setText(
+        missionTime,
         `T+ ${String(hours).padStart(2, "0")}:` +
         `${String(minutes).padStart(2, "0")}:` +
-        `${String(seconds).padStart(2, "0")}`;
+        `${String(seconds).padStart(2, "0")}`
+    );
 }
 
 
 /* ==========================================================
-   SPACE SCENE
-   ========================================================== */
-
-function updateSpaceScene() {
-
-    if (!spaceRocket) {
-        return;
-    }
-
-    spaceAltitude.textContent =
-        `ALT ${altitude.toFixed(1)} KM`;
-
-
-    if (
-        phase ===
-        "COUNTDOWN"
-    ) {
-
-        orbitStatus.textContent =
-            "GROUND";
-
-        spaceRocket.className =
-            "space-rocket";
-
-        spaceRocket.style.left =
-            "50%";
-
-        spaceRocket.style.top =
-            "80%";
-
-        satellite.className =
-            "satellite";
-
-        orbitPath.classList.remove(
-            "active"
-        );
-
-        return;
-    }
-
-
-    if (
-        phase === "IGNITION"
-    ) {
-
-        orbitStatus.textContent =
-            "IGNITION";
-
-        spaceRocket.className =
-            "space-rocket visible ascent";
-
-        spaceRocket.style.left =
-            "50%";
-
-        spaceRocket.style.top =
-            "75%";
-
-        return;
-    }
-
-
-    if (
-        phase === "LIFTOFF"
-    ) {
-
-        orbitStatus.textContent =
-            "LIFTOFF";
-
-        spaceRocket.className =
-            "space-rocket visible ascent";
-
-        spaceRocket.style.left =
-            "50%";
-
-        spaceRocket.style.top =
-            "66%";
-
-        return;
-    }
-
-
-    if (
-        phase === "ASCENT"
-    ) {
-
-        orbitStatus.textContent =
-            "ASCENT";
-
-        const progress =
-            Math.min(
-                altitude / 100,
-                1
-            );
-
-        const rocketTop =
-            66 -
-            progress * 45;
-
-        const rocketLeft =
-            50 +
-            progress * 10;
-
-        spaceRocket.className =
-            "space-rocket visible ascent";
-
-        spaceRocket.style.left =
-            `${rocketLeft}%`;
-
-        spaceRocket.style.top =
-            `${rocketTop}%`;
-
-        return;
-    }
-
-
-    if (
-        phase === "ORBIT"
-    ) {
-
-        orbitStatus.textContent =
-            "ORBIT";
-
-        orbitPath.classList.add(
-            "active"
-        );
-
-        spaceRocket.className =
-            "space-rocket visible orbiting";
-
-        spaceRocket.style.left =
-            "50%";
-
-        spaceRocket.style.top =
-            "53%";
-
-        satellite.className =
-            "satellite";
-
-        return;
-    }
-
-
-    if (
-        phase ===
-        "SATELLITE_DEPLOYED"
-    ) {
-
-        orbitStatus.textContent =
-            "DEPLOYED";
-
-        orbitPath.classList.add(
-            "active"
-        );
-
-        spaceRocket.className =
-            "space-rocket visible orbiting";
-
-        satellite.className =
-            "satellite deployed";
-
-        return;
-    }
-
-
-    if (
-        phase ===
-        "MISSION_SUCCESS"
-    ) {
-
-        orbitStatus.textContent =
-            "MISSION COMPLETE";
-
-        orbitPath.classList.add(
-            "active"
-        );
-
-        spaceRocket.className =
-            "space-rocket visible orbiting";
-
-        satellite.className =
-            "satellite deployed";
-
-        return;
-    }
-
-
-    if (
-        phase ===
-        "ABORTED"
-    ) {
-
-        orbitStatus.textContent =
-            "ABORT";
-
-        spaceRocket.className =
-            "space-rocket";
-
-        satellite.className =
-            "satellite";
-
-        orbitPath.classList.remove(
-            "active"
-        );
-    }
-}
-
-
-/* ==========================================================
-   UPDATE PHASE LABEL
+   PHASE INDICATOR
    ========================================================== */
 
 function updatePhaseIndicator() {
 
-    const phaseNames = {
+    const phases = {
 
         IDLE:
             "PRE-LAUNCH",
@@ -1155,9 +619,965 @@ function updatePhaseIndicator() {
             "MISSION ABORTED"
     };
 
-    phaseIndicator.textContent =
-        phaseNames[phase] ||
-        phase;
+    setText(
+        phaseIndicator,
+        phases[phase] || phase
+    );
+}
+
+
+/* ==========================================================
+   CHART INITIALIZATION
+   ========================================================== */
+
+function initializeCharts() {
+
+    if (
+        typeof Chart === "undefined"
+    ) {
+
+        console.error(
+            "Chart.js failed to load."
+        );
+
+        return;
+    }
+
+    const commonOptions = {
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        animation: false,
+
+        interaction: {
+            intersect: false,
+            mode: "index"
+        },
+
+        plugins: {
+
+            legend: {
+                display: false
+            },
+
+            tooltip: {
+
+                backgroundColor:
+                    "#08101b",
+
+                borderColor:
+                    "#29425e",
+
+                borderWidth: 1,
+
+                titleColor:
+                    "#dce9f7",
+
+                bodyColor:
+                    "#8da0b8",
+
+                displayColors:
+                    false
+            }
+        },
+
+        scales: {
+
+            x: {
+
+                grid: {
+                    color:
+                        "rgba(60,90,120,0.12)"
+                },
+
+                ticks: {
+
+                    color:
+                        "#52667e",
+
+                    font: {
+                        size: 8
+                    },
+
+                    maxTicksLimit: 8
+                }
+            },
+
+            y: {
+
+                beginAtZero: true,
+
+                grid: {
+
+                    color:
+                        "rgba(60,90,120,0.12)"
+                },
+
+                ticks: {
+
+                    color:
+                        "#52667e",
+
+                    font: {
+                        size: 8
+                    }
+                }
+            }
+        }
+    };
+
+
+    const altitudeCanvas =
+        document.getElementById(
+            "altitudeChart"
+        );
+
+    const velocityCanvas =
+        document.getElementById(
+            "velocityChart"
+        );
+
+    const fuelCanvas =
+        document.getElementById(
+            "fuelChart"
+        );
+
+
+    if (
+        altitudeCanvas
+    ) {
+
+        altitudeChart =
+            new Chart(
+                altitudeCanvas,
+                {
+
+                    type: "line",
+
+                    data: {
+
+                        labels:
+                            chartLabels,
+
+                        datasets: [
+                            {
+
+                                data:
+                                    altitudeData,
+
+                                borderColor:
+                                    "#00b7ff",
+
+                                backgroundColor:
+                                    "rgba(0,183,255,0.08)",
+
+                                borderWidth: 2,
+
+                                pointRadius: 0,
+
+                                fill: true,
+
+                                tension: 0.25
+                            }
+                        ]
+                    },
+
+                    options:
+                        commonOptions
+                }
+            );
+    }
+
+
+    if (
+        velocityCanvas
+    ) {
+
+        velocityChart =
+            new Chart(
+                velocityCanvas,
+                {
+
+                    type: "line",
+
+                    data: {
+
+                        labels:
+                            chartLabels,
+
+                        datasets: [
+                            {
+
+                                data:
+                                    velocityData,
+
+                                borderColor:
+                                    "#00e676",
+
+                                backgroundColor:
+                                    "rgba(0,230,118,0.07)",
+
+                                borderWidth: 2,
+
+                                pointRadius: 0,
+
+                                fill: true,
+
+                                tension: 0.25
+                            }
+                        ]
+                    },
+
+                    options:
+                        commonOptions
+                }
+            );
+    }
+
+
+    if (
+        fuelCanvas
+    ) {
+
+        fuelChart =
+            new Chart(
+                fuelCanvas,
+                {
+
+                    type: "line",
+
+                    data: {
+
+                        labels:
+                            chartLabels,
+
+                        datasets: [
+                            {
+
+                                data:
+                                    fuelData,
+
+                                borderColor:
+                                    "#ffb020",
+
+                                backgroundColor:
+                                    "rgba(255,176,32,0.07)",
+
+                                borderWidth: 2,
+
+                                pointRadius: 0,
+
+                                fill: true,
+
+                                tension: 0.2
+                            }
+                        ]
+                    },
+
+                    options: {
+
+                        ...commonOptions,
+
+                        scales: {
+
+                            ...commonOptions.scales,
+
+                            y: {
+
+                                ...commonOptions.scales.y,
+
+                                min: 0,
+
+                                max: 100
+                            }
+                        }
+                    }
+                }
+            );
+    }
+}
+
+
+/* ==========================================================
+   RESET CHARTS
+   ========================================================== */
+
+function resetCharts() {
+
+    chartLabels.length = 0;
+    altitudeData.length = 0;
+    velocityData.length = 0;
+    fuelData.length = 0;
+
+    [
+        altitudeChart,
+        velocityChart,
+        fuelChart
+    ].forEach(chart => {
+
+        if (chart) {
+            chart.update("none");
+        }
+    });
+
+    if (graphStatus) {
+
+        graphStatus.textContent =
+            "STANDBY";
+
+        graphStatus.classList.remove(
+            "active"
+        );
+    }
+}
+
+
+/* ==========================================================
+   UPDATE CHARTS
+   ========================================================== */
+
+function updateCharts() {
+
+    if (
+        !altitudeChart ||
+        !velocityChart ||
+        !fuelChart
+    ) {
+
+        return;
+    }
+
+    chartLabels.push(
+        `T+${missionSeconds}s`
+    );
+
+    altitudeData.push(
+        Number(
+            altitude.toFixed(2)
+        )
+    );
+
+    velocityData.push(
+        Number(
+            velocity.toFixed(3)
+        )
+    );
+
+    fuelData.push(
+        Number(
+            fuel.toFixed(2)
+        )
+    );
+
+
+    /*
+     * Keep the graph from becoming enormous.
+     */
+
+    if (
+        chartLabels.length > 90
+    ) {
+
+        chartLabels.shift();
+        altitudeData.shift();
+        velocityData.shift();
+        fuelData.shift();
+    }
+
+
+    altitudeChart.update("none");
+    velocityChart.update("none");
+    fuelChart.update("none");
+
+
+    if (graphStatus) {
+
+        graphStatus.textContent =
+            "LIVE";
+
+        graphStatus.classList.add(
+            "active"
+        );
+    }
+}
+
+
+/* ==========================================================
+   V2.3 VEHICLE VISUALIZATION
+   ========================================================== */
+
+function updateVehicleScene() {
+
+    if (!vehicle) {
+        return;
+    }
+
+    /*
+     * Reset launch tower state.
+     */
+
+    if (launchTower) {
+
+        launchTower.style.opacity =
+            "0.55";
+    }
+
+
+    /* --------------------------------------------------------
+       IDLE
+       -------------------------------------------------------- */
+
+    if (
+        phase === "IDLE"
+    ) {
+
+        vehicle.className =
+            "vehicle ready";
+
+        setText(
+            vehicleIndicator,
+            "READY"
+        );
+
+        setText(
+            vehicleStatusText,
+            "READY"
+        );
+
+        setText(
+            stageStatus,
+            "STAGE CONFIGURATION: STANDBY"
+        );
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       COUNTDOWN
+       -------------------------------------------------------- */
+
+    if (
+        phase === "COUNTDOWN"
+    ) {
+
+        vehicle.className =
+            "vehicle ready";
+
+        setText(
+            vehicleIndicator,
+            "ARMED"
+        );
+
+        setText(
+            vehicleStatusText,
+            "LAUNCH SYSTEM ARMED"
+        );
+
+        setText(
+            stageStatus,
+            "STAGE CONFIGURATION: FULL STACK"
+        );
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       IGNITION
+       -------------------------------------------------------- */
+
+    if (
+        phase === "IGNITION"
+    ) {
+
+        vehicle.className =
+            "vehicle ignition";
+
+        setText(
+            vehicleIndicator,
+            "IGNITION"
+        );
+
+        setText(
+            vehicleStatusText,
+            "ENGINE IGNITION"
+        );
+
+        setText(
+            stageStatus,
+            "ENGINE STATUS: NOMINAL"
+        );
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       LIFTOFF
+       -------------------------------------------------------- */
+
+    if (
+        phase === "LIFTOFF"
+    ) {
+
+        vehicle.className =
+            "vehicle liftoff";
+
+        setText(
+            vehicleIndicator,
+            "LIFTOFF"
+        );
+
+        setText(
+            vehicleStatusText,
+            "CLEAR OF LAUNCH TOWER"
+        );
+
+        setText(
+            stageStatus,
+            "FLIGHT PHASE: LIFTOFF"
+        );
+
+        if (launchTower) {
+
+            launchTower.style.opacity =
+                "0.28";
+        }
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       ASCENT
+       -------------------------------------------------------- */
+
+    if (
+        phase === "ASCENT"
+    ) {
+
+        vehicle.className =
+            "vehicle ascent";
+
+        setText(
+            vehicleIndicator,
+            "ASCENT"
+        );
+
+        setText(
+            vehicleStatusText,
+            "ASCENT NOMINAL"
+        );
+
+        setText(
+            stageStatus,
+            "FLIGHT PHASE: ASCENT"
+        );
+
+        if (launchTower) {
+
+            launchTower.style.opacity =
+                "0.12";
+        }
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       ORBIT
+       -------------------------------------------------------- */
+
+    if (
+        phase === "ORBIT"
+    ) {
+
+        vehicle.className =
+            "vehicle orbit";
+
+        setText(
+            vehicleIndicator,
+            "ORBIT"
+        );
+
+        setText(
+            vehicleStatusText,
+            "ORBIT INSERTION"
+        );
+
+        setText(
+            stageStatus,
+            "FLIGHT PHASE: ORBITAL OPERATIONS"
+        );
+
+        if (launchTower) {
+
+            launchTower.style.opacity =
+                "0.08";
+        }
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       SATELLITE DEPLOYED
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "SATELLITE_DEPLOYED"
+    ) {
+
+        vehicle.className =
+            "vehicle orbit";
+
+        setText(
+            vehicleIndicator,
+            "DEPLOYED"
+        );
+
+        setText(
+            vehicleStatusText,
+            "PAYLOAD DEPLOYED"
+        );
+
+        setText(
+            stageStatus,
+            "PAYLOAD STATUS: DEPLOYED"
+        );
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       MISSION SUCCESS
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "MISSION_SUCCESS"
+    ) {
+
+        vehicle.className =
+            "vehicle orbit";
+
+        setText(
+            vehicleIndicator,
+            "COMPLETE"
+        );
+
+        setText(
+            vehicleStatusText,
+            "MISSION SUCCESS"
+        );
+
+        setText(
+            stageStatus,
+            "MISSION STATUS: SUCCESS"
+        );
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       ABORT
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "ABORTED"
+    ) {
+
+        vehicle.className =
+            "vehicle ready";
+
+        setText(
+            vehicleIndicator,
+            "ABORT"
+        );
+
+        setText(
+            vehicleStatusText,
+            "LAUNCH ABORTED"
+        );
+
+        setText(
+            stageStatus,
+            "FLIGHT PHASE: ABORT"
+        );
+    }
+}
+
+
+/* ==========================================================
+   V2.1 EARTH / ORBIT VISUALIZATION
+   ========================================================== */
+
+function updateSpaceScene() {
+
+    if (!spaceRocket) {
+        return;
+    }
+
+    setText(
+        spaceAltitude,
+        `ALT ${altitude.toFixed(1)} KM`
+    );
+
+
+    /* --------------------------------------------------------
+       IDLE / COUNTDOWN
+       -------------------------------------------------------- */
+
+    if (
+        phase === "IDLE" ||
+        phase === "COUNTDOWN"
+    ) {
+
+        setText(
+            orbitStatus,
+            phase === "IDLE"
+                ? "GROUND"
+                : "ARMED"
+        );
+
+        spaceRocket.className =
+            "space-rocket";
+
+        spaceRocket.style.left =
+            "50%";
+
+        spaceRocket.style.top =
+            "78%";
+
+        satellite.className =
+            "satellite";
+
+        orbitPath.classList.remove(
+            "active"
+        );
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       IGNITION
+       -------------------------------------------------------- */
+
+    if (
+        phase === "IGNITION"
+    ) {
+
+        setText(
+            orbitStatus,
+            "IGNITION"
+        );
+
+        spaceRocket.className =
+            "space-rocket visible";
+
+        spaceRocket.style.left =
+            "50%";
+
+        spaceRocket.style.top =
+            "74%";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       LIFTOFF
+       -------------------------------------------------------- */
+
+    if (
+        phase === "LIFTOFF"
+    ) {
+
+        setText(
+            orbitStatus,
+            "LIFTOFF"
+        );
+
+        spaceRocket.className =
+            "space-rocket visible";
+
+        spaceRocket.style.left =
+            "50%";
+
+        spaceRocket.style.top =
+            "64%";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       ASCENT
+       -------------------------------------------------------- */
+
+    if (
+        phase === "ASCENT"
+    ) {
+
+        setText(
+            orbitStatus,
+            "ASCENT"
+        );
+
+        const progress =
+            Math.min(
+                altitude / 100,
+                1
+            );
+
+        const rocketTop =
+            64 -
+            progress * 42;
+
+        const rocketLeft =
+            50 +
+            progress * 9;
+
+        spaceRocket.className =
+            "space-rocket visible";
+
+        spaceRocket.style.left =
+            `${rocketLeft}%`;
+
+        spaceRocket.style.top =
+            `${rocketTop}%`;
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       ORBIT
+       -------------------------------------------------------- */
+
+    if (
+        phase === "ORBIT"
+    ) {
+
+        setText(
+            orbitStatus,
+            "ORBIT"
+        );
+
+        orbitPath.classList.add(
+            "active"
+        );
+
+        spaceRocket.className =
+            "space-rocket visible";
+
+        spaceRocket.style.left =
+            "50%";
+
+        spaceRocket.style.top =
+            "53%";
+
+        satellite.className =
+            "satellite";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       SATELLITE DEPLOYMENT
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "SATELLITE_DEPLOYED"
+    ) {
+
+        setText(
+            orbitStatus,
+            "DEPLOYED"
+        );
+
+        orbitPath.classList.add(
+            "active"
+        );
+
+        spaceRocket.className =
+            "space-rocket visible";
+
+        spaceRocket.style.left =
+            "50%";
+
+        spaceRocket.style.top =
+            "53%";
+
+        satellite.className =
+            "satellite deployed";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       MISSION SUCCESS
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "MISSION_SUCCESS"
+    ) {
+
+        setText(
+            orbitStatus,
+            "MISSION COMPLETE"
+        );
+
+        orbitPath.classList.add(
+            "active"
+        );
+
+        spaceRocket.className =
+            "space-rocket visible";
+
+        satellite.className =
+            "satellite deployed";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       ABORT
+       -------------------------------------------------------- */
+
+    if (
+        phase ===
+        "ABORTED"
+    ) {
+
+        setText(
+            orbitStatus,
+            "ABORT"
+        );
+
+        spaceRocket.className =
+            "space-rocket";
+
+        satellite.className =
+            "satellite";
+
+        orbitPath.classList.remove(
+            "active"
+        );
+    }
 }
 
 
@@ -1172,43 +1592,42 @@ function launchMission() {
     }
 
     initializeAudio();
-
     prepareSong();
-
     resetCharts();
 
-    running =
-        true;
 
-    phase =
-        "COUNTDOWN";
+    /*
+     * Reset mission values.
+     */
 
-    countdown =
-        10;
+    running = true;
 
-    altitude =
-        0;
+    phase = "COUNTDOWN";
 
-    velocity =
-        0;
+    countdown = 10;
 
-    fuel =
-        100;
+    altitude = 0;
+    velocity = 0;
+    fuel = 100;
+    temperature = 28;
 
-    temperature =
-        28;
+    orbitSeconds = 0;
+    missionSeconds = 0;
 
-    orbitSeconds =
-        0;
 
-    missionSeconds =
-        0;
+    /*
+     * Reset UI.
+     */
 
-    countdownElement.textContent =
-        "T−10";
+    setText(
+        countdownElement,
+        "T−10"
+    );
 
-    flightStatus.textContent =
-        "COUNTDOWN INITIATED";
+    setText(
+        flightStatus,
+        "COUNTDOWN INITIATED"
+    );
 
     log(
         "FLIGHT",
@@ -1220,15 +1639,15 @@ function launchMission() {
         "T−10"
     );
 
+
     countdownBeep();
 
     updateTelemetry();
-
     updateMissionClock();
-
+    updatePhaseIndicator();
+    updateVehicleScene();
     updateSpaceScene();
 
-    updatePhaseIndicator();
 
     clearInterval(timer);
 
@@ -1241,10 +1660,14 @@ function launchMission() {
 
 
 /* ==========================================================
-   MISSION LOOP
+   MAIN MISSION LOOP
    ========================================================== */
 
 function missionTick() {
+
+    if (!running) {
+        return;
+    }
 
     missionSeconds++;
 
@@ -1256,8 +1679,7 @@ function missionTick() {
        ======================================================== */
 
     if (
-        phase ===
-        "COUNTDOWN"
+        phase === "COUNTDOWN"
     ) {
 
         countdown--;
@@ -1266,8 +1688,10 @@ function missionTick() {
             countdown >= 1
         ) {
 
-            countdownElement.textContent =
-                `T−${countdown}`;
+            setText(
+                countdownElement,
+                `T−${countdown}`
+            );
 
             log(
                 "COUNTDOWN",
@@ -1278,14 +1702,18 @@ function missionTick() {
 
         } else {
 
-            countdownElement.textContent =
-                "T−0";
+            setText(
+                countdownElement,
+                "T−0"
+            );
 
             phase =
                 "IGNITION";
 
-            flightStatus.textContent =
-                "ENGINE IGNITION";
+            setText(
+                flightStatus,
+                "ENGINE IGNITION"
+            );
 
             log(
                 "ENGINE",
@@ -1299,9 +1727,9 @@ function missionTick() {
             );
         }
 
-        updateSpaceScene();
-
         updatePhaseIndicator();
+        updateVehicleScene();
+        updateSpaceScene();
 
         return;
     }
@@ -1312,15 +1740,16 @@ function missionTick() {
        ======================================================== */
 
     if (
-        phase ===
-        "IGNITION"
+        phase === "IGNITION"
     ) {
 
         phase =
             "LIFTOFF";
 
-        flightStatus.textContent =
-            "LIFTOFF CONFIRMED";
+        setText(
+            flightStatus,
+            "LIFTOFF CONFIRMED"
+        );
 
         log(
             "FLIGHT",
@@ -1331,9 +1760,9 @@ function missionTick() {
             "Liftoff confirmed."
         );
 
-        updateSpaceScene();
-
         updatePhaseIndicator();
+        updateVehicleScene();
+        updateSpaceScene();
 
         return;
     }
@@ -1344,24 +1773,25 @@ function missionTick() {
        ======================================================== */
 
     if (
-        phase ===
-        "LIFTOFF"
+        phase === "LIFTOFF"
     ) {
 
         phase =
             "ASCENT";
 
-        flightStatus.textContent =
-            "ASCENT";
+        setText(
+            flightStatus,
+            "ASCENT"
+        );
 
         log(
             "FLIGHT",
             "VEHICLE ASCENDING"
         );
 
-        updateSpaceScene();
-
         updatePhaseIndicator();
+        updateVehicleScene();
+        updateSpaceScene();
 
         return;
     }
@@ -1372,8 +1802,7 @@ function missionTick() {
        ======================================================== */
 
     if (
-        phase ===
-        "ASCENT"
+        phase === "ASCENT"
     ) {
 
         altitude +=
@@ -1391,7 +1820,10 @@ function missionTick() {
         temperature +=
             (Math.random() - 0.5) * 2;
 
+
         updateTelemetry();
+        updateCharts();
+
 
         if (
             altitude >= 100
@@ -1400,11 +1832,12 @@ function missionTick() {
             phase =
                 "ORBIT";
 
-            orbitSeconds =
-                0;
+            orbitSeconds = 0;
 
-            flightStatus.textContent =
-                "ORBIT INSERTION";
+            setText(
+                flightStatus,
+                "ORBIT INSERTION"
+            );
 
             log(
                 "FLIGHT",
@@ -1416,11 +1849,10 @@ function missionTick() {
             );
         }
 
-        updateCharts();
-
-        updateSpaceScene();
 
         updatePhaseIndicator();
+        updateVehicleScene();
+        updateSpaceScene();
 
         return;
     }
@@ -1431,8 +1863,7 @@ function missionTick() {
        ======================================================== */
 
     if (
-        phase ===
-        "ORBIT"
+        phase === "ORBIT"
     ) {
 
         orbitSeconds++;
@@ -1449,18 +1880,21 @@ function missionTick() {
         temperature +=
             (Math.random() - 0.5) * 0.5;
 
+
         updateTelemetry();
+        updateCharts();
+
 
         log(
             "ORBIT",
             `ORBITAL OPERATIONS T+${orbitSeconds}s`
         );
 
-        updateCharts();
-
-        updateSpaceScene();
 
         updatePhaseIndicator();
+        updateVehicleScene();
+        updateSpaceScene();
+
 
         if (
             orbitSeconds >= 5
@@ -1471,10 +1905,6 @@ function missionTick() {
 
         return;
     }
-
-    updateSpaceScene();
-
-    updatePhaseIndicator();
 }
 
 
@@ -1484,16 +1914,18 @@ function missionTick() {
 
 function deploySatellite() {
 
-    running =
-        false;
+    running = false;
 
     clearInterval(timer);
 
     phase =
         "SATELLITE_DEPLOYED";
 
-    flightStatus.textContent =
-        "SATELLITE DEPLOYED";
+
+    setText(
+        flightStatus,
+        "SATELLITE DEPLOYED"
+    );
 
     log(
         "MISSION",
@@ -1502,13 +1934,14 @@ function deploySatellite() {
 
     deploymentSound();
 
-    updateSpaceScene();
-
     updatePhaseIndicator();
+    updateVehicleScene();
+    updateSpaceScene();
 
     speak(
         "Satellite deployed successfully."
     );
+
 
     setTimeout(
         missionSuccess,
@@ -1526,21 +1959,27 @@ function missionSuccess() {
     phase =
         "MISSION_SUCCESS";
 
-    flightStatus.textContent =
-        "MISSION SUCCESS";
+
+    setText(
+        flightStatus,
+        "MISSION SUCCESS"
+    );
 
     log(
         "SUCCESS",
         "MISSION ACCOMPLISHED"
     );
 
-    updateSpaceScene();
 
     updatePhaseIndicator();
+    updateVehicleScene();
+    updateSpaceScene();
+
 
     speak(
         "Mission accomplished. Jai Heend!"
     );
+
 
     setTimeout(
         playFinalSong,
@@ -1559,105 +1998,51 @@ function abortMission() {
         return;
     }
 
-    running =
-        false;
+    running = false;
 
     clearInterval(timer);
 
     phase =
         "ABORTED";
 
-    flightStatus.textContent =
-        "MISSION ABORTED";
+
+    setText(
+        flightStatus,
+        "MISSION ABORTED"
+    );
+
 
     stopFinalSong();
 
-    updateSpaceScene();
-
-    updatePhaseIndicator();
-
-    graphStatus.textContent =
-        "ABORTED";
-
-    graphStatus.classList.remove(
-        "active"
-    );
 
     if (
-        "speechSynthesis"
-        in window
+        "speechSynthesis" in window
     ) {
 
         window.speechSynthesis.cancel();
     }
 
+
     log(
         "WARNING",
         "MISSION ABORT COMMAND RECEIVED"
     );
-}
 
 
-/* ==========================================================
-   BROWSER VOICE
-   ========================================================== */
+    if (graphStatus) {
 
-function speak(text) {
+        graphStatus.textContent =
+            "ABORTED";
 
-    if (
-        !(
-            "speechSynthesis"
-            in window
-        )
-    ) {
-
-        return;
+        graphStatus.classList.remove(
+            "active"
+        );
     }
 
-    window.speechSynthesis.cancel();
 
-    const speech =
-        new SpeechSynthesisUtterance(
-            text
-        );
-
-    speech.rate =
-        0.9;
-
-    speech.pitch =
-        0.95;
-
-    speech.volume =
-        1.0;
-
-    const voices =
-        window.speechSynthesis
-            .getVoices();
-
-    const preferredVoice =
-        voices.find(
-            voice =>
-                voice.lang ===
-                "en-IN"
-        ) ||
-        voices.find(
-            voice =>
-                voice.lang.startsWith(
-                    "en"
-                )
-        );
-
-    if (
-        preferredVoice
-    ) {
-
-        speech.voice =
-            preferredVoice;
-    }
-
-    window.speechSynthesis.speak(
-        speech
-    );
+    updatePhaseIndicator();
+    updateVehicleScene();
+    updateSpaceScene();
 }
 
 
@@ -1665,31 +2050,42 @@ function speak(text) {
    BUTTONS
    ========================================================== */
 
-document
-    .getElementById(
+const launchButton =
+    document.getElementById(
         "launchButton"
-    )
-    .addEventListener(
+    );
+
+if (launchButton) {
+
+    launchButton.addEventListener(
         "click",
         launchMission
     );
+}
 
 
-document
-    .getElementById(
+const abortButton =
+    document.getElementById(
         "abortButton"
-    )
-    .addEventListener(
+    );
+
+if (abortButton) {
+
+    abortButton.addEventListener(
         "click",
         abortMission
     );
+}
 
 
-document
-    .getElementById(
+const fullscreenButton =
+    document.getElementById(
         "fullscreenButton"
-    )
-    .addEventListener(
+    );
+
+if (fullscreenButton) {
+
+    fullscreenButton.addEventListener(
         "click",
         () => {
 
@@ -1706,10 +2102,11 @@ document
             }
         }
     );
+}
 
 
 /* ==========================================================
-   INITIALIZATION
+   INITIAL STATE
    ========================================================== */
 
 initializeCharts();
@@ -1718,16 +2115,21 @@ updateTelemetry();
 
 updateMissionClock();
 
-updateSpaceScene();
-
 updatePhaseIndicator();
+
+updateVehicleScene();
+
+updateSpaceScene();
 
 prepareSong();
 
 
+/* ==========================================================
+   SPEECH VOICE INITIALIZATION
+   ========================================================== */
+
 if (
-    "speechSynthesis"
-    in window
+    "speechSynthesis" in window
 ) {
 
     window.speechSynthesis
@@ -1735,6 +2137,5 @@ if (
 
             window.speechSynthesis
                 .getVoices();
-
         };
 }
