@@ -11,6 +11,11 @@
 
     <title>ISRO Mission Control</title>
 
+    <!-- Chart.js -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"
+    ></script>
+
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}"
@@ -28,17 +33,24 @@
     <header class="topbar">
 
         <div>
-            <h1>🛰️ ISRO MISSION CONTROL</h1>
+
+            <h1>
+                🛰️ ISRO MISSION CONTROL
+            </h1>
 
             <p>
                 INDIAN SPACE RESEARCH ORGANISATION
                 • FLIGHT OPERATIONS
             </p>
+
         </div>
 
         <div class="system-status">
+
             <span class="status-dot"></span>
+
             SYSTEM NOMINAL
+
         </div>
 
     </header>
@@ -82,7 +94,7 @@
 
 
     <!-- ======================================================
-         TELEMETRY
+         TELEMETRY CARDS
          ====================================================== -->
 
     <section class="telemetry-grid">
@@ -158,6 +170,124 @@
 
 
     <!-- ======================================================
+         LIVE TELEMETRY GRAPHS
+         ====================================================== -->
+
+    <section class="panel graphs-panel">
+
+        <div class="section-header">
+
+            <div>
+
+                <span class="label">
+                    LIVE TELEMETRY
+                </span>
+
+                <h2>
+                    FLIGHT DATA
+                </h2>
+
+            </div>
+
+            <div
+                id="graphStatus"
+                class="graph-status"
+            >
+                STANDBY
+            </div>
+
+        </div>
+
+
+        <div class="graphs-grid">
+
+
+            <!-- ALTITUDE -->
+
+            <div class="graph-card">
+
+                <div class="graph-title">
+
+                    <span>
+                        ALTITUDE
+                    </span>
+
+                    <strong>
+                        KM
+                    </strong>
+
+                </div>
+
+                <div class="chart-container">
+
+                    <canvas
+                        id="altitudeChart"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- VELOCITY -->
+
+            <div class="graph-card">
+
+                <div class="graph-title">
+
+                    <span>
+                        VELOCITY
+                    </span>
+
+                    <strong>
+                        KM/S
+                    </strong>
+
+                </div>
+
+                <div class="chart-container">
+
+                    <canvas
+                        id="velocityChart"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- FUEL -->
+
+            <div class="graph-card">
+
+                <div class="graph-title">
+
+                    <span>
+                        FUEL
+                    </span>
+
+                    <strong>
+                        %
+                    </strong>
+
+                </div>
+
+                <div class="chart-container">
+
+                    <canvas
+                        id="fuelChart"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
          MAIN MISSION AREA
          ====================================================== -->
 
@@ -199,15 +329,11 @@
                 class="space-scene"
             >
 
-                <!-- ORBIT PATH -->
-
                 <div
                     id="orbitPath"
                     class="orbit-path"
                 ></div>
 
-
-                <!-- EARTH -->
 
                 <div
                     id="earth"
@@ -229,8 +355,6 @@
                 </div>
 
 
-                <!-- ROCKET -->
-
                 <div
                     id="spaceRocket"
                     class="space-rocket"
@@ -238,8 +362,6 @@
                     🚀
                 </div>
 
-
-                <!-- SATELLITE -->
 
                 <div
                     id="satellite"
@@ -262,8 +384,6 @@
                     ORBIT
                 </div>
 
-
-                <!-- ALTITUDE -->
 
                 <div
                     id="spaceAltitude"
@@ -309,6 +429,13 @@
                 T−10
             </div>
 
+            <div
+                id="phaseIndicator"
+                class="phase-indicator"
+            >
+                PRE-LAUNCH
+            </div>
+
         </div>
 
 
@@ -350,7 +477,7 @@
 
 
     <!-- ======================================================
-         FUEL
+         FUEL BAR
          ====================================================== -->
 
     <section class="panel fuel-panel">

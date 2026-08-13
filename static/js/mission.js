@@ -29,6 +29,25 @@ let finalSong = null;
 
 
 /* ==========================================================
+   CHART DATA
+   ========================================================== */
+
+let chartLabels = [];
+
+let altitudeData = [];
+
+let velocityData = [];
+
+let fuelData = [];
+
+let altitudeChart = null;
+
+let velocityChart = null;
+
+let fuelChart = null;
+
+
+/* ==========================================================
    ELEMENTS
    ========================================================== */
 
@@ -37,6 +56,9 @@ const countdownElement =
 
 const flightStatus =
     document.getElementById("flightStatus");
+
+const phaseIndicator =
+    document.getElementById("phaseIndicator");
 
 const altitudeElement =
     document.getElementById("altitude");
@@ -62,9 +84,12 @@ const missionLog =
 const missionTime =
     document.getElementById("missionTime");
 
+const graphStatus =
+    document.getElementById("graphStatus");
+
 
 /* ==========================================================
-   V2.1 SPACE ELEMENTS
+   SPACE ELEMENTS
    ========================================================== */
 
 const spaceRocket =
@@ -91,6 +116,404 @@ const spaceAltitude =
     document.getElementById(
         "spaceAltitude"
     );
+
+
+/* ==========================================================
+   INITIALIZE CHARTS
+   ========================================================== */
+
+function initializeCharts() {
+
+    if (
+        typeof Chart ===
+        "undefined"
+    ) {
+
+        console.error(
+            "Chart.js failed to load."
+        );
+
+        return;
+    }
+
+
+    const commonOptions = {
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        animation: false,
+
+        interaction: {
+            intersect: false,
+
+            mode: "index"
+        },
+
+        plugins: {
+
+            legend: {
+                display: false
+            },
+
+            tooltip: {
+                backgroundColor:
+                    "#08101b",
+
+                borderColor:
+                    "#29425e",
+
+                borderWidth:
+                    1,
+
+                titleColor:
+                    "#dce9f7",
+
+                bodyColor:
+                    "#8da0b8",
+
+                displayColors:
+                    false
+            }
+        },
+
+        scales: {
+
+            x: {
+
+                grid: {
+                    color:
+                        "rgba(60, 90, 120, 0.12)"
+                },
+
+                ticks: {
+                    color:
+                        "#52667e",
+
+                    font: {
+                        size: 8
+                    },
+
+                    maxTicksLimit:
+                        8
+                }
+            },
+
+            y: {
+
+                beginAtZero:
+                    true,
+
+                grid: {
+                    color:
+                        "rgba(60, 90, 120, 0.12)"
+                },
+
+                ticks: {
+                    color:
+                        "#52667e",
+
+                    font: {
+                        size: 8
+                    }
+                }
+            }
+        }
+    };
+
+
+    altitudeChart =
+        new Chart(
+            document.getElementById(
+                "altitudeChart"
+            ),
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels:
+                        chartLabels,
+
+                    datasets: [
+
+                        {
+                            data:
+                                altitudeData,
+
+                            borderColor:
+                                "#00b7ff",
+
+                            backgroundColor:
+                                "rgba(0,183,255,0.08)",
+
+                            borderWidth:
+                                2,
+
+                            pointRadius:
+                                0,
+
+                            fill:
+                                true,
+
+                            tension:
+                                0.25
+                        }
+
+                    ]
+                },
+
+                options:
+                    commonOptions
+            }
+        );
+
+
+    velocityChart =
+        new Chart(
+            document.getElementById(
+                "velocityChart"
+            ),
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels:
+                        chartLabels,
+
+                    datasets: [
+
+                        {
+                            data:
+                                velocityData,
+
+                            borderColor:
+                                "#00e676",
+
+                            backgroundColor:
+                                "rgba(0,230,118,0.07)",
+
+                            borderWidth:
+                                2,
+
+                            pointRadius:
+                                0,
+
+                            fill:
+                                true,
+
+                            tension:
+                                0.25
+                        }
+
+                    ]
+                },
+
+                options:
+                    commonOptions
+            }
+        );
+
+
+    fuelChart =
+        new Chart(
+            document.getElementById(
+                "fuelChart"
+            ),
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels:
+                        chartLabels,
+
+                    datasets: [
+
+                        {
+                            data:
+                                fuelData,
+
+                            borderColor:
+                                "#ffb020",
+
+                            backgroundColor:
+                                "rgba(255,176,32,0.07)",
+
+                            borderWidth:
+                                2,
+
+                            pointRadius:
+                                0,
+
+                            fill:
+                                true,
+
+                            tension:
+                                0.2
+                        }
+
+                    ]
+                },
+
+                options:
+                    {
+
+                        ...commonOptions,
+
+                        scales: {
+
+                            ...commonOptions.scales,
+
+                            y: {
+
+                                ...commonOptions.scales.y,
+
+                                min:
+                                    0,
+
+                                max:
+                                    100
+                            }
+                        }
+                    }
+            }
+        );
+}
+
+
+/* ==========================================================
+   RESET CHARTS
+   ========================================================== */
+
+function resetCharts() {
+
+    chartLabels.length = 0;
+
+    altitudeData.length = 0;
+
+    velocityData.length = 0;
+
+    fuelData.length = 0;
+
+    if (
+        altitudeChart
+    ) {
+
+        altitudeChart.update(
+            "none"
+        );
+    }
+
+    if (
+        velocityChart
+    ) {
+
+        velocityChart.update(
+            "none"
+        );
+    }
+
+    if (
+        fuelChart
+    ) {
+
+        fuelChart.update(
+            "none"
+        );
+    }
+
+    graphStatus.textContent =
+        "STANDBY";
+
+    graphStatus.classList.remove(
+        "active"
+    );
+}
+
+
+/* ==========================================================
+   UPDATE CHARTS
+   ========================================================== */
+
+function updateCharts() {
+
+    if (
+        !altitudeChart ||
+        !velocityChart ||
+        !fuelChart
+    ) {
+        return;
+    }
+
+
+    chartLabels.push(
+        `T+${missionSeconds}s`
+    );
+
+    altitudeData.push(
+        Number(
+            altitude.toFixed(2)
+        )
+    );
+
+    velocityData.push(
+        Number(
+            velocity.toFixed(3)
+        )
+    );
+
+    fuelData.push(
+        Number(
+            fuel.toFixed(2)
+        )
+    );
+
+
+    /*
+     * Keep the charts readable.
+     * Maximum 90 points.
+     */
+
+    if (
+        chartLabels.length > 90
+    ) {
+
+        chartLabels.shift();
+
+        altitudeData.shift();
+
+        velocityData.shift();
+
+        fuelData.shift();
+    }
+
+
+    altitudeChart.update(
+        "none"
+    );
+
+    velocityChart.update(
+        "none"
+    );
+
+    fuelChart.update(
+        "none"
+    );
+
+
+    graphStatus.textContent =
+        "LIVE";
+
+    graphStatus.classList.add(
+        "active"
+    );
+}
 
 
 /* ==========================================================
@@ -169,7 +592,9 @@ function countdownBeep() {
             audioContext.currentTime + 0.12
         );
 
-        oscillator.connect(gain);
+        oscillator.connect(
+            gain
+        );
 
         gain.connect(
             audioContext.destination
@@ -178,7 +603,8 @@ function countdownBeep() {
         oscillator.start();
 
         oscillator.stop(
-            audioContext.currentTime + 0.13
+            audioContext.currentTime +
+            0.13
         );
 
     } catch (error) {
@@ -237,7 +663,9 @@ function ignitionSound() {
             audioContext.currentTime + 0.9
         );
 
-        oscillator.connect(gain);
+        oscillator.connect(
+            gain
+        );
 
         gain.connect(
             audioContext.destination
@@ -246,7 +674,8 @@ function ignitionSound() {
         oscillator.start();
 
         oscillator.stop(
-            audioContext.currentTime + 0.95
+            audioContext.currentTime +
+            0.95
         );
 
     } catch (error) {
@@ -305,7 +734,9 @@ function deploymentSound() {
             audioContext.currentTime + 0.7
         );
 
-        oscillator.connect(gain);
+        oscillator.connect(
+            gain
+        );
 
         gain.connect(
             audioContext.destination
@@ -314,7 +745,8 @@ function deploymentSound() {
         oscillator.start();
 
         oscillator.stop(
-            audioContext.currentTime + 0.75
+            audioContext.currentTime +
+            0.75
         );
 
     } catch (error) {
@@ -362,7 +794,9 @@ function playFinalSong() {
     const result =
         finalSong.play();
 
-    if (result !== undefined) {
+    if (
+        result !== undefined
+    ) {
 
         result.catch(
             error => {
@@ -374,7 +808,7 @@ function playFinalSong() {
 
                 log(
                     "AUDIO",
-                    "Song playback was blocked by browser."
+                    "Song playback was blocked."
                 );
             }
         );
@@ -478,7 +912,7 @@ function updateMissionClock() {
 
 
 /* ==========================================================
-   V2.1 SPACE SCENE
+   SPACE SCENE
    ========================================================== */
 
 function updateSpaceScene() {
@@ -490,10 +924,6 @@ function updateSpaceScene() {
     spaceAltitude.textContent =
         `ALT ${altitude.toFixed(1)} KM`;
 
-
-    /* --------------------------------------------------------
-       COUNTDOWN
-       -------------------------------------------------------- */
 
     if (
         phase ===
@@ -523,13 +953,8 @@ function updateSpaceScene() {
     }
 
 
-    /* --------------------------------------------------------
-       IGNITION
-       -------------------------------------------------------- */
-
     if (
-        phase ===
-        "IGNITION"
+        phase === "IGNITION"
     ) {
 
         orbitStatus.textContent =
@@ -548,13 +973,8 @@ function updateSpaceScene() {
     }
 
 
-    /* --------------------------------------------------------
-       LIFTOFF
-       -------------------------------------------------------- */
-
     if (
-        phase ===
-        "LIFTOFF"
+        phase === "LIFTOFF"
     ) {
 
         orbitStatus.textContent =
@@ -573,13 +993,8 @@ function updateSpaceScene() {
     }
 
 
-    /* --------------------------------------------------------
-       ASCENT
-       -------------------------------------------------------- */
-
     if (
-        phase ===
-        "ASCENT"
+        phase === "ASCENT"
     ) {
 
         orbitStatus.textContent =
@@ -590,11 +1005,6 @@ function updateSpaceScene() {
                 altitude / 100,
                 1
             );
-
-        /*
-         * Move rocket from lower section
-         * toward top of scene.
-         */
 
         const rocketTop =
             66 -
@@ -617,13 +1027,8 @@ function updateSpaceScene() {
     }
 
 
-    /* --------------------------------------------------------
-       ORBIT
-       -------------------------------------------------------- */
-
     if (
-        phase ===
-        "ORBIT"
+        phase === "ORBIT"
     ) {
 
         orbitStatus.textContent =
@@ -649,10 +1054,6 @@ function updateSpaceScene() {
     }
 
 
-    /* --------------------------------------------------------
-       SATELLITE DEPLOYED
-       -------------------------------------------------------- */
-
     if (
         phase ===
         "SATELLITE_DEPLOYED"
@@ -674,10 +1075,6 @@ function updateSpaceScene() {
         return;
     }
 
-
-    /* --------------------------------------------------------
-       MISSION SUCCESS
-       -------------------------------------------------------- */
 
     if (
         phase ===
@@ -701,10 +1098,6 @@ function updateSpaceScene() {
     }
 
 
-    /* --------------------------------------------------------
-       ABORT
-       -------------------------------------------------------- */
-
     if (
         phase ===
         "ABORTED"
@@ -727,6 +1120,48 @@ function updateSpaceScene() {
 
 
 /* ==========================================================
+   UPDATE PHASE LABEL
+   ========================================================== */
+
+function updatePhaseIndicator() {
+
+    const phaseNames = {
+
+        IDLE:
+            "PRE-LAUNCH",
+
+        COUNTDOWN:
+            "COUNTDOWN",
+
+        IGNITION:
+            "ENGINE IGNITION",
+
+        LIFTOFF:
+            "LIFTOFF",
+
+        ASCENT:
+            "ASCENT",
+
+        ORBIT:
+            "ORBITAL OPERATIONS",
+
+        SATELLITE_DEPLOYED:
+            "SATELLITE DEPLOYED",
+
+        MISSION_SUCCESS:
+            "MISSION COMPLETE",
+
+        ABORTED:
+            "MISSION ABORTED"
+    };
+
+    phaseIndicator.textContent =
+        phaseNames[phase] ||
+        phase;
+}
+
+
+/* ==========================================================
    START MISSION
    ========================================================== */
 
@@ -739,6 +1174,8 @@ function launchMission() {
     initializeAudio();
 
     prepareSong();
+
+    resetCharts();
 
     running =
         true;
@@ -790,6 +1227,8 @@ function launchMission() {
     updateMissionClock();
 
     updateSpaceScene();
+
+    updatePhaseIndicator();
 
     clearInterval(timer);
 
@@ -862,6 +1301,8 @@ function missionTick() {
 
         updateSpaceScene();
 
+        updatePhaseIndicator();
+
         return;
     }
 
@@ -892,6 +1333,8 @@ function missionTick() {
 
         updateSpaceScene();
 
+        updatePhaseIndicator();
+
         return;
     }
 
@@ -917,6 +1360,8 @@ function missionTick() {
         );
 
         updateSpaceScene();
+
+        updatePhaseIndicator();
 
         return;
     }
@@ -971,7 +1416,11 @@ function missionTick() {
             );
         }
 
+        updateCharts();
+
         updateSpaceScene();
+
+        updatePhaseIndicator();
 
         return;
     }
@@ -1007,7 +1456,11 @@ function missionTick() {
             `ORBITAL OPERATIONS T+${orbitSeconds}s`
         );
 
+        updateCharts();
+
         updateSpaceScene();
+
+        updatePhaseIndicator();
 
         if (
             orbitSeconds >= 5
@@ -1020,6 +1473,8 @@ function missionTick() {
     }
 
     updateSpaceScene();
+
+    updatePhaseIndicator();
 }
 
 
@@ -1048,6 +1503,8 @@ function deploySatellite() {
     deploymentSound();
 
     updateSpaceScene();
+
+    updatePhaseIndicator();
 
     speak(
         "Satellite deployed successfully."
@@ -1078,6 +1535,8 @@ function missionSuccess() {
     );
 
     updateSpaceScene();
+
+    updatePhaseIndicator();
 
     speak(
         "Mission accomplished. Jai Heend!"
@@ -1114,6 +1573,15 @@ function abortMission() {
     stopFinalSong();
 
     updateSpaceScene();
+
+    updatePhaseIndicator();
+
+    graphStatus.textContent =
+        "ABORTED";
+
+    graphStatus.classList.remove(
+        "active"
+    );
 
     if (
         "speechSynthesis"
@@ -1241,14 +1709,18 @@ document
 
 
 /* ==========================================================
-   INITIAL STATE
+   INITIALIZATION
    ========================================================== */
+
+initializeCharts();
 
 updateTelemetry();
 
 updateMissionClock();
 
 updateSpaceScene();
+
+updatePhaseIndicator();
 
 prepareSong();
 

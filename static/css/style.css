@@ -94,7 +94,8 @@ body {
    ========================================================== */
 
 .panel,
-.telemetry-card {
+.telemetry-card,
+.graph-card {
     background:
         rgba(11, 17, 28, 0.92);
 
@@ -163,7 +164,7 @@ body {
 
 
 /* ==========================================================
-   TELEMETRY
+   TELEMETRY CARDS
    ========================================================== */
 
 .telemetry-grid {
@@ -203,6 +204,97 @@ body {
     color: #50627a;
 
     font-size: 9px;
+}
+
+
+/* ==========================================================
+   LIVE GRAPHS
+   ========================================================== */
+
+.graphs-panel {
+    margin-bottom: 12px;
+}
+
+.section-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    margin-bottom: 14px;
+}
+
+.section-header h2 {
+    margin: 5px 0 0;
+
+    font-size: 20px;
+}
+
+.graph-status {
+    padding:
+        5px 9px;
+
+    border:
+        1px solid #23415c;
+
+    border-radius: 5px;
+
+    color: #647d99;
+
+    font-size: 9px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+}
+
+.graph-status.active {
+    color: #00e676;
+
+    border-color:
+        rgba(0, 230, 118, 0.45);
+}
+
+.graphs-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 10px;
+}
+
+.graph-card {
+    padding: 14px;
+
+    min-width: 0;
+}
+
+.graph-title {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 8px;
+
+    color: #71859f;
+
+    font-size: 10px;
+
+    font-weight: bold;
+}
+
+.graph-title strong {
+    color: #4f647d;
+}
+
+.chart-container {
+    position: relative;
+
+    width: 100%;
+
+    height: 180px;
 }
 
 
@@ -381,11 +473,6 @@ body {
     }
 }
 
-
-/* ==========================================================
-   EARTH LAND
-   ========================================================== */
-
 .earth::before {
     content: "";
 
@@ -488,7 +575,7 @@ body {
 
 
 /* ==========================================================
-   ORBIT PATH
+   ORBIT
    ========================================================== */
 
 .orbit-path {
@@ -509,10 +596,6 @@ body {
         rgba(0, 183, 255, 0.55);
 
     border-radius: 50%;
-
-    box-shadow:
-        0 0 10px
-        rgba(0, 183, 255, 0.08);
 
     z-index: 2;
 
@@ -555,7 +638,7 @@ body {
     position: absolute;
 
     left: 50%;
-    top: 78%;
+    top: 80%;
 
     transform:
         translate(-50%, -50%);
@@ -745,7 +828,7 @@ body {
 
 
 /* ==========================================================
-   FLIGHT STATUS
+   FLIGHT PANEL
    ========================================================== */
 
 .flight-panel {
@@ -778,6 +861,28 @@ body {
     text-shadow:
         0 0 20px
         rgba(0, 183, 255, 0.4);
+}
+
+.phase-indicator {
+    display: inline-block;
+
+    margin-top: 25px;
+
+    padding:
+        7px 12px;
+
+    border:
+        1px solid #203750;
+
+    border-radius: 5px;
+
+    color: #607792;
+
+    font-size: 9px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
 }
 
 
@@ -875,7 +980,7 @@ body {
 
 
 /* ==========================================================
-   CONTROLS
+   BUTTONS
    ========================================================== */
 
 .controls {
@@ -943,7 +1048,8 @@ button {
 }
 
 .normal-button:hover {
-    border-color: #00aaff;
+    border-color:
+        #00aaff;
 
     background: #16283c;
 }
@@ -952,6 +1058,18 @@ button {
 /* ==========================================================
    RESPONSIVE
    ========================================================== */
+
+@media (max-width: 1200px) {
+
+    .graphs-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+    .chart-container {
+        height: 190px;
+    }
+}
 
 @media (max-width: 1100px) {
 
