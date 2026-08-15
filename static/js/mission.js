@@ -772,9 +772,7 @@ function startMission() {
   updateAll();
 
   // THIS WAS MISSING
-  timer = setInterval(
-    tick,
-    1000
+  timer = setInterval(tick, 1000);
   );
 }
 
