@@ -2,6 +2,7 @@
 
 let running = false;
 let phase = "IDLE";
+let countdown = 10;
 
 // Public read-only mission state for safety/Arduino modules.
 // Other scripts must use window.missionPhase instead of accessing the
@@ -728,25 +729,16 @@ function resetMission() {
    ========================================================== */
 
 function startMission() {
-
-  // Never allow a second launch loop.
   if (running) return;
 
   initAudio();
   stopAudio();
 
-  clearInterval(timer);
-
-  timer = null;
-
   running = true;
-
   phase = "COUNTDOWN";
-
   countdown = 10;
 
   missionSeconds = 0;
-
   orbitSeconds = 0;
 
   altitude = 0;
@@ -756,26 +748,17 @@ function startMission() {
   signal = 100;
   latency = 38;
 
-  // Show launch immediately
   el.countdown.textContent = "T−10";
 
-  log(
-    "FLIGHT",
-    "Launch sequence initiated"
-  );
+  log("FLIGHT", "Launch sequence initiated");
+  log("COUNTDOWN", "T−10");
 
-  log(
-    "COUNTDOWN",
-    "T−10"
-  );
-
+  beep();
   updateAll();
 
-  // THIS WAS MISSING
+  clearInterval(timer);
   timer = setInterval(tick, 1000);
-  );
 }
-
 /* ==========================================================
    ASCENT PERMISSION
    ========================================================== */
