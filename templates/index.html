@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#05080f">
+  <title>Mission Control Project</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div>
+      <h1>MISSION CONTROL</h1>
+      <p>INDIAN SPACE MISSION PROJECT &nbsp;•&nbsp; FLIGHT OPERATIONS</p>
+    </div>
+    <div class="system-status"><span class="status-dot"></span>SYSTEM NOMINAL</div>
+  </header>
+
+  <section class="panel mission-panel">
+    <div>
+      <span class="label">CURRENT MISSION</span>
+      <h2>CHANDRAYAAN-X</h2>
+      <span class="muted">LUNAR EXPLORATION • SIMULATION</span>
+    </div>
+    <div class="mission-time">
+      <span class="label">MISSION ELAPSED TIME</span>
+      <strong id="missionTime">T+ 00:00:00</strong>
+    </div>
+  </section>
+
+  <section class="telemetry-grid">
+    <div class="telemetry-card"><span>ALTITUDE</span><strong id="altitude">0.0</strong><small>KM</small></div>
+    <div class="telemetry-card"><span>VELOCITY</span><strong id="velocity">0.00</strong><small>KM/S</small></div>
+    <div class="telemetry-card"><span>FUEL</span><strong id="fuel">100.0</strong><small>%</small></div>
+    <div class="telemetry-card"><span>TEMPERATURE</span><strong id="temperature">28.0</strong><small>°C</small></div>
+  </section>
+
+  <section class="panel phase1-panel">
+    <div class="panel-heading">
+      <div><span class="label">V3.1 SYSTEMS</span><h2>ADVANCED TELEMETRY + GROUND NETWORK</h2></div>
+      <div id="phase1State" class="state-chip">STANDBY</div>
+    </div>
+    <div class="phase1-grid">
+      <div class="advanced-telemetry">
+        <div><span>G-LOAD</span><strong id="gLoad">1.00 G</strong></div>
+        <div><span>PRESSURE</span><strong id="pressure">101.3 KPA</strong></div>
+        <div><span>ROLL</span><strong id="roll">0.00°</strong></div>
+        <div><span>PITCH</span><strong id="pitch">0.00°</strong></div>
+        <div><span>YAW</span><strong id="yaw">0.00°</strong></div>
+        <div><span>BATTERY</span><strong id="battery">100%</strong></div>
+        <div><span>BUS VOLTAGE</span><strong id="busVoltage">28.0 V</strong></div>
+        <div><span>THRUST</span><strong id="thrust">0%</strong></div>
+        <div><span>FUEL FLOW</span><strong id="fuelFlow">0.0 KG/S</strong></div>
+      </div>
+      <div class="ground-network">
+        <div class="ground-node active"><span>PRIMARY STATION</span><strong>SHRIHARIKOTA</strong><b id="groundPrimary">ONLINE</b></div>
+        <div class="ground-node"><span>NETWORK NODE</span><strong>BENGALURU</strong><b id="groundBengaluru">STANDBY</b></div>
+        <div class="ground-node"><span>NETWORK NODE</span><strong>PUNE</strong><b id="groundPune">STANDBY</b></div>
+        <div class="ground-readout"><span>SIGNAL</span><strong id="groundSignal">100%</strong><span>LATENCY</span><strong id="groundLatency">38 MS</strong><span>PACKET LOSS</span><strong id="groundLoss">0.01%</strong></div>
+      </div>
+    </div>
+  </section>
+
+  
+<section class="panel arduino-panel">
+  <div class="section-header">
+    <div>
+      <span class="label">HARDWARE CONTROL</span>
+      <h2>ARDUINO UNO</h2>
+    </div>
+    <div id="arduinoStatus" class="graph-status">DISCONNECTED</div>
+  </div>
+
+  <div class="arduino-grid">
+    <div><span>SERIAL LINK</span><strong id="serialStatus">OFFLINE</strong></div>
+    <div><span>CONTROLLER</span><strong>ARDUINO UNO</strong></div>
+    <div><span>BLUE LED</span><strong id="ledStatus">STANDBY</strong></div>
+    <div><span>BUZZER</span><strong id="buzzerStatus">STANDBY</strong></div>
+  </div>
+
+  <div class="arduino-controls">
+    <button id="connectArduinoButton" class="secondary-button">CONNECT ARDUINO</button>
+    <button id="hardwareReadyButton" class="secondary-button">READY SIGNAL</button>
+    <button id="hardwareAbortButton" class="danger-mini">HARDWARE ABORT</button>
+  </div>
+
+  <div class="arduino-console">
+    <span class="label">HARDWARE LINK</span>
+    <div id="arduinoConsole" class="arduino-console-log">
+      [HARDWARE] Waiting for Arduino UNO connection
+    </div>
+  </div>
+</section>
+
+<section class="main-grid">
+
+    <div class="panel vehicle-panel">
+      <div class="panel-heading">
+        <div>
+          <span class="label">LAUNCH VEHICLE</span>
+          <h2>LVM3</h2>
+        </div>
+        <div id="vehicleState" class="state-chip">PRE-LAUNCH</div>
+      </div>
+
+      <div class="vehicle-scene" id="vehicleScene">
+        <div class="scene-grid"></div>
+        <div class="tower" id="tower">
+          <span></span><span></span><span></span><span></span>
+        </div>
+
+        <div class="rocket" id="rocket">
+          <div class="rocket-nose"></div>
+          <div class="rocket-fairing"></div>
+          <div class="rocket-core"></div>
+          <div class="rocket-booster rocket-left"></div>
+          <div class="rocket-booster rocket-right"></div>
+          <div class="rocket-interstage"></div>
+          <div class="rocket-engine"></div>
+          <div class="rocket-plume">
+            <i class="outer"></i>
+            <i class="mid"></i>
+            <i class="core"></i>
+          </div>
+        </div>
+
+        <div class="launch-pad"></div>
+        <div class="vehicle-readout" id="vehicleReadout">VEHICLE READY</div>
+        <div class="scene-altitude" id="sceneAltitude">ALT 0.0 KM</div>
+      </div>
+
+      <div class="vehicle-meta">
+        <div><span>PAYLOAD</span><strong>LUNAR ORBITER</strong></div>
+        <div><span>TARGET</span><strong>LUNAR TRANSFER</strong></div>
+        <div><span>GUIDANCE</span><strong id="guidance">STANDBY</strong></div>
+      </div>
+    </div>
+
+    <div class="panel flight-panel">
+      <span class="label">FLIGHT STATUS</span>
+      <h2 id="flightStatus">READY FOR LAUNCH</h2>
+      <div class="countdown" id="countdown">T−10</div>
+      <div class="phase" id="phase">PRE-LAUNCH</div>
+
+      <div class="orbit-box">
+        <div class="orbit-title"><span>TRAJECTORY</span><strong id="orbitState">GROUND</strong></div>
+        <div class="orbit-scene">
+          <div class="stars"></div>
+          <div class="orbit-ring ring-a"></div>
+          <div class="orbit-ring ring-b"></div>
+          <div class="earth"></div>
+          <div class="orbital-craft" id="orbitalCraft"></div>
+          <div class="satellite" id="satellite"><b></b><i></i><em></em></div>
+        </div>
+        <div class="orbit-readout">
+          <span>LINK</span><strong id="linkState">STANDBY</strong>
+          <span>SIGNAL</span><strong id="signal">100%</strong>
+          <span>LATENCY</span><strong id="latency">38 MS</strong>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="launchButton" class="launch-button">LAUNCH</button>
+        <button id="abortButton" class="abort-button">ABORT</button>
+        <button id="fullscreenButton" class="normal-button">FULLSCREEN</button>
+      </div>
+    </div>
+
+    <div class="panel log-panel">
+      <div class="panel-heading">
+        <div>
+          <span class="label">MISSION LOG</span>
+          <h2>EVENT STREAM</h2>
+        </div>
+        <div id="eventCount" class="state-chip">0 EVENTS</div>
+      </div>
+      <div class="mission-log" id="missionLog"></div>
+
+      <div class="subsystem-head"><span class="label">SUBSYSTEM HEALTH</span></div>
+      <div class="subsystems">
+        <div><span>GUIDANCE</span><b id="subGuidance">NOMINAL</b></div>
+        <div><span>PROPULSION</span><b id="subPropulsion">NOMINAL</b></div>
+        <div><span>THERMAL</span><b id="subThermal">NOMINAL</b></div>
+        <div><span>AVIONICS</span><b id="subAvionics">NOMINAL</b></div>
+        <div><span>COMMUNICATION</span><b id="subComms">NOMINAL</b></div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="panel fuel-panel">
+    <div class="fuel-head"><span>PROPULSION FUEL</span><strong id="fuelPercent">100%</strong></div>
+    <div class="fuel-track"><div id="fuelBar" class="fuel-bar"></div></div>
+  </section>
+
+  <section class="footer-controls">
+    <span class="footer-note">MISSION CONTROL PROJECT • SIMULATION</span>
+    <span class="footer-note">VOICE / AUDIO READY</span>
+  </section>
+
+</div>
+<script src="{{ url_for('static', filename='js/arduino.js') }}"></script>
+<script src="{{ url_for('static', filename='js/safety.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mission.js') }}"></script>
+</body>
+</html>
