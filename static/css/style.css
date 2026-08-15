@@ -34,3 +34,368 @@
 .exhibition .vehicle-scene,.exhibition .space-scene{height:500px}
 @media(max-width:900px){.orbital-data-grid,.recorder-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.orbital-data-grid,.recorder-grid{grid-template-columns:1fr 1fr}}
+/* ==========================================================
+   ARDUINO HARDWARE
+   ========================================================== */
+
+.arduino-panel {
+    margin-top: 24px;
+}
+
+.arduino-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.arduino-info {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.arduino-info div {
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.025);
+}
+
+.arduino-info span {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    opacity: .55;
+    margin-bottom: 5px;
+}
+
+.arduino-info strong {
+    font-size: 13px;
+}
+
+.arduino-status {
+    padding: 8px 13px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.arduino-status.offline {
+    color: #ff7777;
+    border: 1px solid rgba(255,80,80,.4);
+}
+
+.arduino-status.online {
+    color: #39ff88;
+    border: 1px solid rgba(60,255,140,.45);
+}
+
+
+/* ==========================================================
+   SAFETY CONTROL
+   ========================================================== */
+
+.safety-control {
+    margin-top: 24px;
+}
+
+.safety-control-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    align-items: center;
+}
+
+.safety-control-grid > div {
+    padding: 14px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.025);
+}
+
+.safety-control-grid span {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    opacity: .55;
+    margin-bottom: 6px;
+}
+
+.safety-control-grid strong {
+    font-size: 13px;
+}
+
+.emergency-test-button {
+    padding: 12px 16px;
+    border: 1px solid rgba(255,70,70,.55);
+    background: rgba(120,20,20,.25);
+    color: #ff7777;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.emergency-test-button:hover {
+    background: rgba(180,30,30,.4);
+}
+
+
+/* ==========================================================
+   MODALS
+   ========================================================== */
+
+.safety-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0,0,0,.78);
+
+    backdrop-filter:
+        blur(8px);
+}
+
+.safety-modal.hidden {
+    display: none;
+}
+
+.safety-box {
+    width: min(620px, 94vw);
+
+    padding: 34px;
+
+    border-radius: 16px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10,18,32,.98),
+            rgba(4,8,15,.98)
+        );
+
+    border:
+        1px solid rgba(255,255,255,.15);
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.7);
+}
+
+.safety-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.safety-label,
+.emergency-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    opacity: .65;
+}
+
+.safety-box h1 {
+    margin: 10px 0 14px;
+    font-size: clamp(24px, 4vw, 38px);
+}
+
+.safety-box p {
+    opacity: .8;
+}
+
+.safety-warning {
+    font-weight: 700;
+}
+
+.safety-readout {
+    display: grid;
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 10px;
+
+    margin: 24px 0;
+}
+
+.safety-readout div {
+    padding: 13px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.035);
+}
+
+.safety-readout span {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 1px;
+    opacity: .55;
+}
+
+.safety-readout strong {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.safety-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.authorize-button,
+.emergency-button {
+    padding: 14px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 900;
+    letter-spacing: .5px;
+}
+
+.authorize-button {
+    border: 1px solid rgba(50,255,140,.6);
+    background: rgba(30,150,80,.25);
+    color: #49ff98;
+}
+
+.authorize-button:hover {
+    background: rgba(30,190,90,.4);
+}
+
+.emergency-button {
+    border: 1px solid rgba(255,60,60,.65);
+    background: rgba(170,20,20,.3);
+    color: #ff7777;
+}
+
+.emergency-button:hover {
+    background: rgba(210,30,30,.5);
+}
+
+.emergency-button.large {
+    padding: 16px 30px;
+}
+
+
+/* ==========================================================
+   EMERGENCY MODE
+   ========================================================== */
+
+.emergency-overlay {
+    background:
+        rgba(80,0,0,.88);
+}
+
+.emergency-box {
+    border:
+        2px solid rgba(255,50,50,.8);
+
+    box-shadow:
+        0 0 80px rgba(255,0,0,.35);
+}
+
+.emergency-flash {
+    font-size: 64px;
+
+    animation:
+        emergencyFlash .5s infinite alternate;
+}
+
+.emergency-box h1 {
+    color: #ff5555;
+
+    animation:
+        emergencyText .5s infinite alternate;
+}
+
+.emergency-status {
+    margin: 24px 0;
+
+    padding: 14px;
+
+    display: flex;
+    justify-content: space-between;
+
+    border:
+        1px solid rgba(255,60,60,.4);
+
+    border-radius: 8px;
+
+    background:
+        rgba(100,0,0,.25);
+}
+
+.emergency-status strong {
+    color: #ff5555;
+}
+
+body.emergency-active {
+    animation:
+        emergencyPageFlash .5s infinite alternate;
+}
+
+
+@keyframes emergencyFlash {
+
+    from {
+        opacity: .45;
+        transform: scale(.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+}
+
+
+@keyframes emergencyText {
+
+    from {
+        opacity: .6;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+@keyframes emergencyPageFlash {
+
+    from {
+        box-shadow:
+            inset 0 0 0 rgba(255,0,0,0);
+    }
+
+    to {
+        box-shadow:
+            inset 0 0 70px rgba(255,0,0,.18);
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .safety-readout {
+        grid-template-columns: 1fr;
+    }
+
+    .safety-box {
+        padding: 24px;
+    }
+
+}
