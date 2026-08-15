@@ -732,15 +732,12 @@ function startMission() {
   // Never allow a second launch loop.
   if (running) return;
 
-
   initAudio();
-
   stopAudio();
 
   clearInterval(timer);
 
   timer = null;
-
 
   running = true;
 
@@ -753,65 +750,14 @@ function startMission() {
   orbitSeconds = 0;
 
   altitude = 0;
-
   velocity = 0;
-
   fuel = 100;
-
   temperature = 28;
-
   signal = 100;
-
   latency = 38;
 
-  packetLoss = 0.01;
-
-  gLoad = 1;
-
-  pressure = 101.3;
-
-  roll = 0;
-
-  pitch = 0;
-
-  yaw = 0;
-
-  battery = 100;
-
-  busVoltage = 28;
-
-  thrust = 0;
-
-  fuelFlow = 0;
-
-  dataRate = 0;
-
-
-  window.missionAscentAuthorized =
-    false;
-
-  window.missionAscentPermissionOpen =
-    false;
-
-  window.missionEmergencyActive =
-    false;
-
-
-  if (
-    typeof v10Hold !==
-    "undefined"
-  ) {
-
-    v10Hold = false;
-  }
-
-
-  closeAscentPermission();
-
-
-  el.countdown.textContent =
-    "T−10";
-
+  // Show launch immediately
+  el.countdown.textContent = "T−10";
 
   log(
     "FLIGHT",
@@ -823,21 +769,14 @@ function startMission() {
     "T−10"
   );
 
-
-  beep();
-
-
   updateAll();
 
-
-  // Exactly one mission clock.
-  timer =
-    setInterval(
-      tick,
-      1000
-    );
+  // THIS WAS MISSING
+  timer = setInterval(
+    tick,
+    1000
+  );
 }
-
 
 /* ==========================================================
    ASCENT PERMISSION
