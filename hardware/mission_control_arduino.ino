@@ -1,51 +1,79 @@
 /*
 ============================================================
 ISRO MISSION CONTROL
-ARDUINO HARDWARE INTERFACE
+ARDUINO HARDWARE + EMERGENCY BUTTON
 ============================================================
 
-Board : Arduino UNO
-Port  : COM3
-Baud  : 9600
+BOARD
+    Arduino UNO
 
-Hardware:
-D3  -> Blue LED
-D10 -> Buzzer
+SERIAL
+    9600 baud
 
-Normal commands:
-READY
-COUNTDOWN:10
-COUNTDOWN:9
-...
-COUNTDOWN:1
-IGNITION
-LIFTOFF
-ASCENT
-ORBIT
-DEPLOY
-SUCCESS
-RESET
+HARDWARE
+    D2  -> Emergency Push Button -> GND
+    D3  -> Blue LED
+    D10 -> Buzzer
 
-Safety commands:
-ASCENT_HOLD
-ASCENT_AUTHORIZED
-WARNING
-EMERGENCY
-ABORT
+BUTTON BEHAVIOUR
+
+    SINGLE PRESS
+        -> Emergency alarm
+
+    DOUBLE PRESS
+        -> Mission abort
 
 ============================================================
 */
 
+const int EMERGENCY_BUTTON = 2;
 const int BLUE_LED = 3;
-const int BUZZER   = 10;
+const int BUZZER = 10;
 
-String inputCommand = "";
+
+// ============================================================
+// BUTTON VARIABLES
+// ============================================================
+
+bool lastButtonState = HIGH;
+bool buttonState = HIGH;
+
+unsigned long lastDebounceTime = 0;
+
+const unsigned long debounceDelay = 50;
+
+
+// Double-click timing
+bool waitingForSecondClick = false;
+
+unsigned long firstClickTime = 0;
+
+const unsigned long doubleClickWindow = 650;
+
+
+// ============================================================
+// EMERGENCY STATE
+// ============================================================
 
 bool emergencyActive = false;
+
 bool ascentHold = false;
 
+
+// ============================================================
+// ALARM
+// ============================================================
+
 unsigned long lastAlarmTime = 0;
+
 bool alarmState = false;
+
+
+// ============================================================
+// SERIAL INPUT
+// ============================================================
+
+String inputCommand = "";
 
 
 // ============================================================
@@ -54,17 +82,39 @@ bool alarmState = false;
 
 void setup() {
 
-  pinMode(BLUE_LED, OUTPUT);
-  pinMode(BUZZER, OUTPUT);
+  pinMode(
+    EMERGENCY_BUTTON,
+    INPUT_PULLUP
+  );
 
-  digitalWrite(BLUE_LED, LOW);
+  pinMode(
+    BLUE_LED,
+    OUTPUT
+  );
+
+  pinMode(
+    BUZZER,
+    OUTPUT
+  );
+
+
+  digitalWrite(
+    BLUE_LED,
+    LOW
+  );
+
   noTone(BUZZER);
+
 
   Serial.begin(9600);
 
+
   delay(500);
 
-  Serial.println("ARDUINO_READY");
+
+  Serial.println(
+    "ARDUINO_READY"
+  );
 }
 
 
@@ -72,33 +122,22 @@ void setup() {
 // SHORT TONE
 // ============================================================
 
-void toneShort(int frequency, int duration) {
+void toneShort(
+  int frequency,
+  int duration
+) {
 
-  tone(BUZZER, frequency, duration);
+  tone(
+    BUZZER,
+    frequency,
+    duration
+  );
 
-  delay(duration + 30);
-
-  noTone(BUZZER);
-}
-
-
-// ============================================================
-// WARNING ALARM
-// ============================================================
-
-void warningAlarm() {
-
-  tone(BUZZER, 850, 180);
-
-  digitalWrite(BLUE_LED, HIGH);
-
-  delay(200);
+  delay(
+    duration + 30
+  );
 
   noTone(BUZZER);
-
-  digitalWrite(BLUE_LED, LOW);
-
-  delay(120);
 }
 
 
@@ -108,37 +147,262 @@ void warningAlarm() {
 
 void emergencyAlarm() {
 
-  unsigned long now = millis();
+  unsigned long now =
+    millis();
 
-  if (now - lastAlarmTime >= 350) {
 
-    lastAlarmTime = now;
+  if (
+    now - lastAlarmTime >= 300
+  ) {
 
-    alarmState = !alarmState;
+    lastAlarmTime =
+      now;
+
+
+    alarmState =
+      !alarmState;
+
 
     if (alarmState) {
 
-      digitalWrite(BLUE_LED, HIGH);
+      digitalWrite(
+        BLUE_LED,
+        HIGH
+      );
 
-      tone(BUZZER, 1200);
+      tone(
+        BUZZER,
+        1200
+      );
 
-    } else {
+    }
 
-      digitalWrite(BLUE_LED, LOW);
+    else {
 
-      noTone(BUZZER);
+      digitalWrite(
+        BLUE_LED,
+        LOW
+      );
+
+      noTone(
+        BUZZER
+      );
     }
   }
 }
 
 
 // ============================================================
-// HANDLE COMMAND
+// START EMERGENCY
 // ============================================================
 
-void handleCommand(String command) {
+void startEmergency(
+  const char* source
+) {
+
+  if (emergencyActive) {
+    return;
+  }
+
+
+  emergencyActive =
+    true;
+
+
+  ascentHold =
+    false;
+
+
+  alarmState =
+    false;
+
+
+  lastAlarmTime =
+    0;
+
+
+  Serial.print(
+    "EVENT:EMERGENCY:"
+  );
+
+
+  Serial.println(
+    source
+  );
+}
+
+
+// ============================================================
+// ABORT MISSION
+// ============================================================
+
+void abortMission(
+  const char* source
+) {
+
+  emergencyActive =
+    false;
+
+
+  ascentHold =
+    false;
+
+
+  alarmState =
+    false;
+
+
+  noTone(
+    BUZZER
+  );
+
+
+  digitalWrite(
+    BLUE_LED,
+    LOW
+  );
+
+
+  Serial.print(
+    "EVENT:ABORT:"
+  );
+
+
+  Serial.println(
+    source
+  );
+
+
+  Serial.println(
+    "ABORT_OK"
+  );
+}
+
+
+// ============================================================
+// BUTTON HANDLING
+// ============================================================
+
+void checkEmergencyButton() {
+
+  bool reading =
+    digitalRead(
+      EMERGENCY_BUTTON
+    );
+
+
+  // ----------------------------------------------------------
+  // Debounce
+  // ----------------------------------------------------------
+
+  if (
+    reading != lastButtonState
+  ) {
+
+    lastDebounceTime =
+      millis();
+  }
+
+
+  if (
+    millis() - lastDebounceTime
+    > debounceDelay
+  ) {
+
+    if (
+      reading != buttonState
+    ) {
+
+      buttonState =
+        reading;
+
+
+      // ------------------------------------------------------
+      // BUTTON PRESSED
+      // INPUT_PULLUP means LOW = PRESSED
+      // ------------------------------------------------------
+
+      if (
+        buttonState == LOW
+      ) {
+
+        unsigned long now =
+          millis();
+
+
+        // ----------------------------------------------------
+        // SECOND CLICK
+        // ----------------------------------------------------
+
+        if (
+          waitingForSecondClick &&
+          now - firstClickTime
+          <= doubleClickWindow
+        ) {
+
+          waitingForSecondClick =
+            false;
+
+
+          abortMission(
+            "PHYSICAL_DOUBLE_PRESS"
+          );
+        }
+
+
+        // ----------------------------------------------------
+        // FIRST CLICK
+        // ----------------------------------------------------
+
+        else {
+
+          waitingForSecondClick =
+            true;
+
+
+          firstClickTime =
+            now;
+        }
+      }
+    }
+  }
+
+
+  lastButtonState =
+    reading;
+
+
+  // ----------------------------------------------------------
+  // FIRST CLICK EXPIRED
+  // ----------------------------------------------------------
+
+  if (
+    waitingForSecondClick &&
+    millis() - firstClickTime
+    > doubleClickWindow
+  ) {
+
+    waitingForSecondClick =
+      false;
+
+
+    startEmergency(
+      "PHYSICAL_BUTTON"
+    );
+  }
+}
+
+
+// ============================================================
+// HANDLE SERIAL COMMAND
+// ============================================================
+
+void handleCommand(
+  String command
+) {
 
   command.trim();
+
   command.toUpperCase();
 
 
@@ -146,18 +410,31 @@ void handleCommand(String command) {
   // RESET
   // ==========================================================
 
-  if (command == "RESET") {
+  if (
+    command == "RESET"
+  ) {
 
-    emergencyActive = false;
-    ascentHold = false;
+    emergencyActive =
+      false;
 
-    noTone(BUZZER);
+    ascentHold =
+      false;
 
-    digitalWrite(BLUE_LED, LOW);
+    waitingForSecondClick =
+      false;
 
-    alarmState = false;
+    noTone(
+      BUZZER
+    );
 
-    Serial.println("RESET_OK");
+    digitalWrite(
+      BLUE_LED,
+      LOW
+    );
+
+    Serial.println(
+      "RESET_OK"
+    );
 
     return;
   }
@@ -167,16 +444,31 @@ void handleCommand(String command) {
   // READY
   // ==========================================================
 
-  if (command == "READY") {
+  if (
+    command == "READY"
+  ) {
 
-    emergencyActive = false;
-    ascentHold = false;
+    emergencyActive =
+      false;
 
-    noTone(BUZZER);
+    ascentHold =
+      false;
 
-    digitalWrite(BLUE_LED, HIGH);
+    waitingForSecondClick =
+      false;
 
-    Serial.println("READY_OK");
+    noTone(
+      BUZZER
+    );
+
+    digitalWrite(
+      BLUE_LED,
+      HIGH
+    );
+
+    Serial.println(
+      "READY_OK"
+    );
 
     return;
   }
@@ -186,24 +478,57 @@ void handleCommand(String command) {
   // COUNTDOWN
   // ==========================================================
 
-  if (command.startsWith("COUNTDOWN:")) {
+  if (
+    command.startsWith(
+      "COUNTDOWN:"
+    )
+  ) {
 
-    if (emergencyActive) {
+    if (
+      emergencyActive
+    ) {
+
       return;
     }
 
+
+    /*
+    The website sends:
+
+        COUNTDOWN:10
+        COUNTDOWN:9
+        ...
+        COUNTDOWN:1
+
+    Arduino gives one short beep
+    for every received countdown value.
+    */
+
     digitalWrite(
       BLUE_LED,
-      !digitalRead(BLUE_LED)
+      !digitalRead(
+        BLUE_LED
+      )
     );
 
-    toneShort(1000, 120);
 
-    Serial.print("COUNTDOWN_OK:");
+    toneShort(
+      1000,
+      120
+    );
+
+
+    Serial.print(
+      "COUNTDOWN_OK:"
+    );
+
 
     Serial.println(
-      command.substring(10)
+      command.substring(
+        10
+      )
     );
+
 
     return;
   }
@@ -213,15 +538,32 @@ void handleCommand(String command) {
   // IGNITION
   // ==========================================================
 
-  if (command == "IGNITION") {
+  if (
+    command == "IGNITION"
+  ) {
 
-    digitalWrite(BLUE_LED, HIGH);
+    digitalWrite(
+      BLUE_LED,
+      HIGH
+    );
 
-    toneShort(450, 250);
 
-    toneShort(750, 350);
+    toneShort(
+      450,
+      250
+    );
 
-    Serial.println("IGNITION_OK");
+
+    toneShort(
+      750,
+      350
+    );
+
+
+    Serial.println(
+      "IGNITION_OK"
+    );
+
 
     return;
   }
@@ -231,15 +573,32 @@ void handleCommand(String command) {
   // LIFTOFF
   // ==========================================================
 
-  if (command == "LIFTOFF") {
+  if (
+    command == "LIFTOFF"
+  ) {
 
-    digitalWrite(BLUE_LED, HIGH);
+    digitalWrite(
+      BLUE_LED,
+      HIGH
+    );
 
-    toneShort(550, 250);
 
-    toneShort(850, 450);
+    toneShort(
+      550,
+      250
+    );
 
-    Serial.println("LIFTOFF_OK");
+
+    toneShort(
+      850,
+      450
+    );
+
+
+    Serial.println(
+      "LIFTOFF_OK"
+    );
+
 
     return;
   }
@@ -249,17 +608,36 @@ void handleCommand(String command) {
   // ASCENT HOLD
   // ==========================================================
 
-  if (command == "ASCENT_HOLD") {
+  if (
+    command == "ASCENT_HOLD"
+  ) {
 
-    ascentHold = true;
+    ascentHold =
+      true;
 
-    digitalWrite(BLUE_LED, LOW);
 
-    toneShort(700, 180);
+    digitalWrite(
+      BLUE_LED,
+      LOW
+    );
 
-    toneShort(700, 180);
 
-    Serial.println("ASCENT_HOLD_OK");
+    toneShort(
+      700,
+      180
+    );
+
+
+    toneShort(
+      700,
+      180
+    );
+
+
+    Serial.println(
+      "ASCENT_HOLD_OK"
+    );
+
 
     return;
   }
@@ -269,15 +647,30 @@ void handleCommand(String command) {
   // ASCENT AUTHORIZED
   // ==========================================================
 
-  if (command == "ASCENT_AUTHORIZED") {
+  if (
+    command == "ASCENT_AUTHORIZED"
+  ) {
 
-    ascentHold = false;
+    ascentHold =
+      false;
 
-    digitalWrite(BLUE_LED, HIGH);
 
-    toneShort(1300, 150);
+    digitalWrite(
+      BLUE_LED,
+      HIGH
+    );
 
-    Serial.println("ASCENT_AUTHORIZED_OK");
+
+    toneShort(
+      1300,
+      150
+    );
+
+
+    Serial.println(
+      "ASCENT_AUTHORIZED_OK"
+    );
+
 
     return;
   }
@@ -287,15 +680,30 @@ void handleCommand(String command) {
   // ASCENT
   // ==========================================================
 
-  if (command == "ASCENT") {
+  if (
+    command == "ASCENT"
+  ) {
 
-    ascentHold = false;
+    ascentHold =
+      false;
 
-    digitalWrite(BLUE_LED, HIGH);
 
-    toneShort(1000, 250);
+    digitalWrite(
+      BLUE_LED,
+      HIGH
+    );
 
-    Serial.println("ASCENT_OK");
+
+    toneShort(
+      1000,
+      250
+    );
+
+
+    Serial.println(
+      "ASCENT_OK"
+    );
+
 
     return;
   }
@@ -305,13 +713,26 @@ void handleCommand(String command) {
   // ORBIT
   // ==========================================================
 
-  if (command == "ORBIT") {
+  if (
+    command == "ORBIT"
+  ) {
 
-    digitalWrite(BLUE_LED, HIGH);
+    digitalWrite(
+      BLUE_LED,
+      HIGH
+    );
 
-    toneShort(1200, 200);
 
-    Serial.println("ORBIT_OK");
+    toneShort(
+      1200,
+      200
+    );
+
+
+    Serial.println(
+      "ORBIT_OK"
+    );
+
 
     return;
   }
@@ -321,15 +742,32 @@ void handleCommand(String command) {
   // DEPLOY
   // ==========================================================
 
-  if (command == "DEPLOY") {
+  if (
+    command == "DEPLOY"
+  ) {
 
-    digitalWrite(BLUE_LED, HIGH);
+    digitalWrite(
+      BLUE_LED,
+      HIGH
+    );
 
-    toneShort(1400, 150);
 
-    toneShort(1800, 200);
+    toneShort(
+      1400,
+      150
+    );
 
-    Serial.println("DEPLOY_OK");
+
+    toneShort(
+      1800,
+      200
+    );
+
+
+    Serial.println(
+      "DEPLOY_OK"
+    );
+
 
     return;
   }
@@ -339,15 +777,30 @@ void handleCommand(String command) {
   // SUCCESS
   // ==========================================================
 
-  if (command == "SUCCESS") {
+  if (
+    command == "SUCCESS"
+  ) {
 
-    emergencyActive = false;
+    emergencyActive =
+      false;
 
-    digitalWrite(BLUE_LED, HIGH);
 
-    toneShort(1600, 500);
+    digitalWrite(
+      BLUE_LED,
+      HIGH
+    );
 
-    Serial.println("SUCCESS_OK");
+
+    toneShort(
+      1600,
+      500
+    );
+
+
+    Serial.println(
+      "SUCCESS_OK"
+    );
+
 
     return;
   }
@@ -357,11 +810,20 @@ void handleCommand(String command) {
   // WARNING
   // ==========================================================
 
-  if (command == "WARNING") {
+  if (
+    command == "WARNING"
+  ) {
 
-    warningAlarm();
+    toneShort(
+      850,
+      180
+    );
 
-    Serial.println("WARNING_OK");
+
+    Serial.println(
+      "WARNING_OK"
+    );
+
 
     return;
   }
@@ -371,15 +833,14 @@ void handleCommand(String command) {
   // EMERGENCY
   // ==========================================================
 
-  if (command == "EMERGENCY") {
+  if (
+    command == "EMERGENCY"
+  ) {
 
-    emergencyActive = true;
+    startEmergency(
+      "MISSION_CONTROL"
+    );
 
-    alarmState = false;
-
-    lastAlarmTime = 0;
-
-    Serial.println("EMERGENCY_ALARM_ACTIVE");
 
     return;
   }
@@ -389,68 +850,93 @@ void handleCommand(String command) {
   // ABORT
   // ==========================================================
 
-  if (command == "ABORT") {
+  if (
+    command == "ABORT"
+  ) {
 
-    emergencyActive = false;
-    ascentHold = false;
+    abortMission(
+      "MISSION_CONTROL"
+    );
 
-    noTone(BUZZER);
-
-    digitalWrite(BLUE_LED, LOW);
-
-    alarmState = false;
-
-    Serial.println("ABORT_OK");
 
     return;
   }
 
 
   // ==========================================================
-  // UNKNOWN COMMAND
+  // UNKNOWN
   // ==========================================================
 
-  Serial.print("UNKNOWN_COMMAND:");
+  Serial.print(
+    "UNKNOWN_COMMAND:"
+  );
 
-  Serial.println(command);
+
+  Serial.println(
+    command
+  );
 }
 
 
 // ============================================================
-// LOOP
+// MAIN LOOP
 // ============================================================
 
 void loop() {
 
-  // ----------------------------------------------------------
-  // Emergency alarm has priority
-  // ----------------------------------------------------------
+  /*
+  IMPORTANT:
+  Button is checked continuously even
+  when the emergency alarm is running.
+  */
 
-  if (emergencyActive) {
+  checkEmergencyButton();
+
+
+  /*
+  Emergency alarm has priority.
+  */
+
+  if (
+    emergencyActive
+  ) {
 
     emergencyAlarm();
   }
 
 
-  // ----------------------------------------------------------
-  // Read serial
-  // ----------------------------------------------------------
+  /*
+  Read Mission Control commands.
+  */
 
-  while (Serial.available() > 0) {
+  while (
+    Serial.available() > 0
+  ) {
 
-    char incoming = Serial.read();
+    char incoming =
+      Serial.read();
 
 
-    if (incoming == '\n') {
+    if (
+      incoming == '\n'
+    ) {
 
-      handleCommand(inputCommand);
+      handleCommand(
+        inputCommand
+      );
 
-      inputCommand = "";
+
+      inputCommand =
+        "";
     }
 
-    else if (incoming != '\r') {
 
-      inputCommand += incoming;
+    else if (
+      incoming != '\r'
+    ) {
+
+      inputCommand +=
+        incoming;
     }
   }
 }
