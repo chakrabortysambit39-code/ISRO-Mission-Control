@@ -1,1281 +1,1026 @@
 "use strict";
 
-/*
-============================================================
-ISRO MISSION CONTROL
-ARDUINO WEB SERIAL INTERFACE
-============================================================
-
-Arduino:
-    COM3
-    9600 baud
-
-Features:
-    - Arduino connection
-    - Countdown synchronization
-    - Mission commands
-    - Physical emergency button
-    - Emergency event reception
-    - Physical double-click abort
-============================================================
-*/
-
-
 let arduinoPort = null;
 let arduinoWriter = null;
 let arduinoReader = null;
-
-let arduinoConnected = false;
-let arduinoConnecting = false;
-
-let lastArduinoCountdown = null;
-
-const ARDUINO_BAUD_RATE = 9600;
+let arduinoReading = false;
+let arduinoBuffer = "";
 
 
-// ============================================================
-// LOG
-// ============================================================
+/* ==========================================================
+   ARDUINO LOG
+   ========================================================== */
 
 function arduinoLog(message) {
 
-    console.log(
-        "[ARDUINO]",
-        message
+  const box =
+    document.getElementById(
+      "arduinoConsole"
+    );
+
+  if (box) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+    row.textContent =
+      message;
+
+    box.appendChild(
+      row
+    );
+
+    box.scrollTop =
+      box.scrollHeight;
+  }
+
+  if (
+    typeof window.arduinoPanelLog ===
+    "function"
+  ) {
+
+    window.arduinoPanelLog(
+      message
+    );
+  }
+}
+
+
+/* ==========================================================
+   CONNECTION STATUS
+   ========================================================== */
+
+function setArduinoConnected(
+  connected,
+  message = ""
+) {
+
+  const status =
+    document.getElementById(
+      "arduinoStatus"
+    );
+
+  const serial =
+    document.getElementById(
+      "serialStatus"
+    );
+
+  if (status) {
+
+    status.textContent =
+      connected
+        ? "CONNECTED"
+        : "DISCONNECTED";
+
+    status.classList.toggle(
+      "status-connected",
+      connected
+    );
+
+    status.classList.toggle(
+      "status-error",
+      !connected
+    );
+  }
+
+  if (serial) {
+
+    serial.textContent =
+      connected
+        ? "ONLINE"
+        : "OFFLINE";
+  }
+
+  if (message) {
+
+    arduinoLog(
+      message
+    );
+  }
+}
+
+
+/* ==========================================================
+   EMERGENCY WEBSITE DISPLAY
+   ========================================================== */
+
+function createEmergencyDisplay() {
+
+  let display =
+    document.getElementById(
+      "arduinoEmergencyDisplay"
+    );
+
+  if (display) {
+    return display;
+  }
+
+
+  display =
+    document.createElement(
+      "div"
+    );
+
+  display.id =
+    "arduinoEmergencyDisplay";
+
+  display.innerHTML = `
+
+    <div
+      id="arduinoEmergencyBackdrop"
+    ></div>
+
+    <div
+      id="arduinoEmergencyCard"
+    >
+
+      <div
+        id="arduinoEmergencyIcon"
+      >
+        🚨
+      </div>
+
+      <div
+        id="arduinoEmergencyTitle"
+      >
+        EMERGENCY ALARM
+      </div>
+
+      <div
+        id="arduinoEmergencyMessage"
+      >
+        PHYSICAL EMERGENCY BUTTON ACTIVATED
+      </div>
+
+      <div
+        id="arduinoEmergencyStatus"
+      >
+        ARDUINO EMERGENCY SYSTEM ACTIVE
+      </div>
+
+    </div>
+  `;
+
+
+  document.body.appendChild(
+    display
+  );
+
+
+  const style =
+    document.createElement(
+      "style"
+    );
+
+  style.id =
+    "arduinoEmergencyDisplayStyle";
+
+
+  style.textContent = `
+
+    #arduinoEmergencyDisplay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      font-family: inherit;
+    }
+
+    #arduinoEmergencyBackdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(130, 0, 0, 0.28);
+      animation: emergencyFlash 0.55s infinite alternate;
+    }
+
+    #arduinoEmergencyCard {
+      position: relative;
+      width: min(620px, calc(100vw - 40px));
+      padding: 32px;
+      text-align: center;
+      border: 2px solid #ff3636;
+      background: rgba(8, 8, 12, 0.97);
+      box-shadow:
+        0 0 30px rgba(255, 30, 30, 0.7),
+        0 0 90px rgba(255, 30, 30, 0.35);
+      animation: emergencyCardPulse 0.7s infinite alternate;
+    }
+
+    #arduinoEmergencyIcon {
+      font-size: 54px;
+      margin-bottom: 8px;
+    }
+
+    #arduinoEmergencyTitle {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      color: #ff4b4b;
+      margin-bottom: 12px;
+    }
+
+    #arduinoEmergencyMessage {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    #arduinoEmergencyStatus {
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      color: #ffb2b2;
+    }
+
+    @keyframes emergencyFlash {
+      from {
+        opacity: 0.18;
+      }
+
+      to {
+        opacity: 0.42;
+      }
+    }
+
+    @keyframes emergencyCardPulse {
+      from {
+        transform: scale(1);
+      }
+
+      to {
+        transform: scale(1.015);
+      }
+    }
+
+    body.arduino-emergency-active
+      #arduinoEmergencyDisplay {
+      display: flex;
+    }
+  `;
+
+
+  document.head.appendChild(
+    style
+  );
+
+
+  return display;
+}
+
+
+/* ==========================================================
+   SHOW EMERGENCY
+   ========================================================== */
+
+function showArduinoEmergency(
+  source = "PHYSICAL_BUTTON"
+) {
+
+  createEmergencyDisplay();
+
+  document.body.classList.add(
+    "arduino-emergency-active"
+  );
+
+
+  const message =
+    document.getElementById(
+      "arduinoEmergencyMessage"
+    );
+
+  const status =
+    document.getElementById(
+      "arduinoEmergencyStatus"
     );
 
 
-    if (
-        typeof log === "function"
-    ) {
+  if (message) {
 
-        log(
-            "ARDUINO",
-            message
-        );
-    }
+    message.textContent =
+      source === "PHYSICAL_BUTTON"
+        ? "PHYSICAL EMERGENCY BUTTON ACTIVATED"
+        : `EMERGENCY SOURCE: ${source}`;
+  }
+
+
+  if (status) {
+
+    status.textContent =
+      "ARDUINO EMERGENCY SYSTEM ACTIVE";
+  }
+
+
+  arduinoLog(
+    `[SAFETY] 🚨 EMERGENCY ACTIVE — ${source}`
+  );
+
+
+  /*
+    Keep the mission itself held in the
+    emergency state.
+
+    We do NOT automatically abort here.
+    The user's double press performs the abort.
+  */
+
+  if (
+    typeof window.handleSafetyArduinoEvent ===
+    "function"
+  ) {
+
+    window.handleSafetyArduinoEvent(
+      `EVENT:EMERGENCY:${source}`
+    );
+  }
 }
 
 
-// ============================================================
-// SEND COMMAND
-// ============================================================
+/* ==========================================================
+   HIDE EMERGENCY
+   ========================================================== */
 
-async function sendArduinoCommand(
-    command
+function hideArduinoEmergency(
+  statusText = "EMERGENCY CLEARED"
 ) {
 
-    if (
-        !arduinoConnected ||
-        !arduinoWriter
-    ) {
-
-        console.log(
-            "[ARDUINO OFFLINE]",
-            command
-        );
-
-        return false;
-    }
+  document.body.classList.remove(
+    "arduino-emergency-active"
+  );
 
 
-    try {
-
-        const message =
-            command.trim() +
-            "\n";
-
-
-        const data =
-            new TextEncoder().encode(
-                message
-            );
+  const status =
+    document.getElementById(
+      "arduinoEmergencyStatus"
+    );
 
 
-        await arduinoWriter.write(
-            data
-        );
+  if (status) {
 
-
-        const lastTx =
-            document.getElementById(
-                "arduinoLastTx"
-            );
-
-
-        if (lastTx) {
-
-            lastTx.textContent =
-                command;
-        }
-
-
-        arduinoLog(
-            `TX → ${command}`
-        );
-
-
-        return true;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Arduino TX error:",
-            error
-        );
-
-
-        arduinoConnected =
-            false;
-
-
-        updateArduinoUI();
-
-
-        return false;
-    }
+    status.textContent =
+      statusText;
+  }
 }
 
 
-// ============================================================
-// CONNECT
-// ============================================================
+/* ==========================================================
+   SHOW ABORTED STATE
+   ========================================================== */
+
+function showArduinoAbort(
+  source = "ARDUINO"
+) {
+
+  const display =
+    createEmergencyDisplay();
+
+  document.body.classList.add(
+    "arduino-emergency-active"
+  );
+
+
+  const title =
+    document.getElementById(
+      "arduinoEmergencyTitle"
+    );
+
+  const message =
+    document.getElementById(
+      "arduinoEmergencyMessage"
+    );
+
+  const status =
+    document.getElementById(
+      "arduinoEmergencyStatus"
+    );
+
+
+  if (title) {
+
+    title.textContent =
+      "MISSION ABORTED";
+  }
+
+
+  if (message) {
+
+    message.textContent =
+      "EMERGENCY ABORT FROM ARDUINO";
+  }
+
+
+  if (status) {
+
+    status.textContent =
+      `ABORT SOURCE: ${source}`;
+  }
+
+
+  /*
+    Turn the overlay into an aborted
+    mission notification after a moment.
+  */
+
+  setTimeout(
+    () => {
+
+      document.body.classList.remove(
+        "arduino-emergency-active"
+      );
+
+    },
+    4000
+  );
+}
+
+
+/* ==========================================================
+   CONNECT ARDUINO
+   ========================================================== */
 
 async function connectArduino() {
 
+  if (
+    !("serial" in navigator)
+  ) {
+
+    arduinoLog(
+      "[ARDUINO] Web Serial is not supported in this browser"
+    );
+
+    setArduinoConnected(
+      false
+    );
+
+    return false;
+  }
+
+
+  try {
+
     if (
-        arduinoConnected ||
-        arduinoConnecting
+      arduinoPort &&
+      arduinoPort.readable &&
+      arduinoWriter
     ) {
 
-        return;
+      setArduinoConnected(
+        true,
+        "[ARDUINO] Already connected"
+      );
+
+      return true;
     }
 
 
-    if (
-        !("serial" in navigator)
-    ) {
-
-        alert(
-            "Web Serial is not supported.\n\n" +
-            "Use Google Chrome or Microsoft Edge."
-        );
-
-        return;
-    }
+    arduinoPort =
+      await navigator.serial.requestPort();
 
 
-    arduinoConnecting =
-        true;
+    await arduinoPort.open({
+      baudRate: 9600
+    });
 
 
-    try {
-
-        arduinoLog(
-            "Opening serial port..."
-        );
+    arduinoWriter =
+      arduinoPort.writable.getWriter();
 
 
-        arduinoPort =
-            await navigator.serial.requestPort();
+    setArduinoConnected(
+      true,
+      "[ARDUINO] Serial link established"
+    );
 
 
-        await arduinoPort.open({
-
-            baudRate:
-                ARDUINO_BAUD_RATE
-
-        });
+    startArduinoReader();
 
 
-        arduinoWriter =
-            arduinoPort.writable.getWriter();
+    return true;
+
+  } catch (error) {
+
+    arduinoLog(
+      `[ARDUINO] Connection failed: ${
+        error?.message ||
+        error
+      }`
+    );
 
 
-        arduinoConnected =
-            true;
+    arduinoPort =
+      null;
+
+    arduinoWriter =
+      null;
 
 
-        lastArduinoCountdown =
-            null;
+    setArduinoConnected(
+      false
+    );
 
 
-        updateArduinoUI();
-
-
-        arduinoLog(
-            "ARDUINO LINK ONLINE"
-        );
-
-
-        /*
-        Start reader BEFORE READY,
-        so we don't miss ARDUINO_READY.
-        */
-
-        startArduinoReader();
-
-
-        await sendArduinoCommand(
-            "READY"
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Arduino connection error:",
-            error
-        );
-
-
-        arduinoLog(
-            "Connection failed"
-        );
-
-
-        arduinoConnected =
-            false;
-
-
-        updateArduinoUI();
-
-    }
-
-    finally {
-
-        arduinoConnecting =
-            false;
-    }
+    return false;
+  }
 }
 
 
-// ============================================================
-// DISCONNECT
-// ============================================================
-
-async function disconnectArduino() {
-
-    try {
-
-        if (
-            arduinoReader
-        ) {
-
-            try {
-
-                await arduinoReader.cancel();
-
-            }
-
-            catch (_) {}
-
-            arduinoReader =
-                null;
-        }
-
-
-        if (
-            arduinoWriter
-        ) {
-
-            try {
-
-                arduinoWriter.releaseLock();
-
-            }
-
-            catch (_) {}
-
-            arduinoWriter =
-                null;
-        }
-
-
-        if (
-            arduinoPort
-        ) {
-
-            try {
-
-                await arduinoPort.close();
-
-            }
-
-            catch (_) {}
-
-            arduinoPort =
-                null;
-        }
-
-    }
-
-    finally {
-
-        arduinoConnected =
-            false;
-
-
-        updateArduinoUI();
-
-
-        arduinoLog(
-            "ARDUINO LINK OFFLINE"
-        );
-    }
-}
-
-
-// ============================================================
-// READ ARDUINO
-// ============================================================
+/* ==========================================================
+   SERIAL READER
+   ========================================================== */
 
 async function startArduinoReader() {
 
-    if (
-        !arduinoPort ||
-        !arduinoPort.readable
-    ) {
+  if (
+    !arduinoPort?.readable ||
+    arduinoReading
+  ) {
 
-        return;
-    }
+    return;
+  }
+
+
+  arduinoReading =
+    true;
+
+
+  try {
+
+    arduinoReader =
+      arduinoPort.readable.getReader();
 
 
     const decoder =
-        new TextDecoder();
+      new TextDecoder();
 
 
-    arduinoReader =
-        arduinoPort
-            .readable
-            .getReader();
+    while (
+      arduinoReading
+    ) {
+
+      const {
+        value,
+        done
+      } =
+        await arduinoReader.read();
 
 
-    let buffer = "";
+      if (done) {
+        break;
+      }
 
+
+      if (!value) {
+        continue;
+      }
+
+
+      arduinoBuffer +=
+        decoder.decode(
+          value,
+          {
+            stream: true
+          }
+        );
+
+
+      const lines =
+        arduinoBuffer.split(
+          /\r?\n/
+        );
+
+
+      arduinoBuffer =
+        lines.pop() ||
+        "";
+
+
+      for (
+        const raw of lines
+      ) {
+
+        const line =
+          raw.trim();
+
+
+        if (line) {
+
+          handleArduinoResponse(
+            line
+          );
+        }
+      }
+    }
+
+  } catch (error) {
+
+    if (arduinoReading) {
+
+      arduinoLog(
+        `[ARDUINO] Reader error: ${
+          error?.message ||
+          error
+        }`
+      );
+    }
+
+  } finally {
 
     try {
 
-        while (
-            arduinoConnected
-        ) {
+      arduinoReader
+        ?.releaseLock();
 
-            const {
-                value,
-                done
-            } =
-                await arduinoReader.read();
+    } catch (_) {}
 
 
-            if (done) {
-                break;
-            }
+    arduinoReader =
+      null;
 
-
-            if (!value) {
-                continue;
-            }
-
-
-            buffer +=
-                decoder.decode(
-                    value,
-                    {
-                        stream: true
-                    }
-                );
-
-
-            const lines =
-                buffer.split(
-                    "\n"
-                );
-
-
-            buffer =
-                lines.pop();
-
-
-            for (
-                const line of lines
-            ) {
-
-                const message =
-                    line.trim();
-
-
-                if (!message) {
-                    continue;
-                }
-
-
-                arduinoLog(
-                    `RX ← ${message}`
-                );
-
-
-                handleArduinoResponse(
-                    message
-                );
-            }
-        }
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Arduino reader error:",
-            error
-        );
-
-    }
-
-    finally {
-
-        try {
-
-            arduinoReader.releaseLock();
-
-        }
-
-        catch (_) {}
-
-        arduinoReader =
-            null;
-    }
+    arduinoReading =
+      false;
+  }
 }
 
 
-// ============================================================
-// ARDUINO RESPONSE HANDLER
-// ============================================================
+/* ==========================================================
+   SEND TO ARDUINO
+   ========================================================== */
 
-function handleArduinoResponse(
-    message
+async function sendArduino(
+  command
 ) {
 
-    /*
-    Physical button:
-        EVENT:EMERGENCY:PHYSICAL_BUTTON
-    */
+  const cmd =
+    String(
+      command ||
+      ""
+    ).trim();
 
-    if (
-        message.startsWith(
-            "EVENT:EMERGENCY:"
-        )
-    ) {
 
-        const source =
-            message.substring(
-                "EVENT:EMERGENCY:"
-                    .length
-            );
+  if (!cmd) {
+    return false;
+  }
 
 
-        if (
-            typeof triggerEmergency ===
-            "function"
-        ) {
+  if (!arduinoWriter) {
 
-            triggerEmergency(
-                "Physical emergency button activated."
-            );
-        }
-
-
-        return;
-    }
-
-
-    /*
-    Physical double click:
-        EVENT:ABORT:PHYSICAL_DOUBLE_PRESS
-    */
-
-    if (
-        message.startsWith(
-            "EVENT:ABORT:"
-        )
-    ) {
-
-        if (
-            typeof abortFromEmergency ===
-            "function"
-        ) {
-
-            abortFromEmergency();
-
-        }
-
-        else if (
-            typeof abortMission ===
-            "function"
-        ) {
-
-            abortMission();
-        }
-
-
-        return;
-    }
-
-
-    if (
-        message ===
-        "EMERGENCY_ALARM_ACTIVE"
-    ) {
-
-        if (
-            typeof showEmergencyAlarm ===
-            "function"
-        ) {
-
-            showEmergencyAlarm(
-                "Arduino emergency alarm active."
-            );
-        }
-    }
-
-
-    if (
-        message ===
-        "ABORT_OK"
-    ) {
-
-        if (
-            typeof showEmergencyCleared ===
-            "function"
-        ) {
-
-            showEmergencyCleared();
-        }
-    }
-}
-
-
-// ============================================================
-// COUNTDOWN SYNC
-// ============================================================
-
-function syncArduinoCountdown(
-    countdownText
-) {
-
-    if (
-        !arduinoConnected
-    ) {
-
-        return;
-    }
-
-
-    if (
-        !countdownText
-    ) {
-
-        return;
-    }
-
-
-    /*
-    Supports:
-
-        T−10
-        T-10
-        T−9
-        T-9
-    */
-
-
-    const match =
-        countdownText.match(
-            /T[−-](\d+)/
-        );
-
-
-    if (!match) {
-
-        return;
-    }
-
-
-    const number =
-        Number(
-            match[1]
-        );
-
-
-    if (
-        Number.isNaN(number)
-    ) {
-
-        return;
-    }
-
-
-    /*
-    Don't send the same countdown
-    number repeatedly.
-    */
-
-    if (
-        number ===
-        lastArduinoCountdown
-    ) {
-
-        return;
-    }
-
-
-    lastArduinoCountdown =
-        number;
-
-
-    sendArduinoCommand(
-        `COUNTDOWN:${number}`
-    );
-}
-
-
-// ============================================================
-// WATCH COUNTDOWN
-// ============================================================
-
-function watchArduinoCountdown() {
-
-    const countdown =
-        document.getElementById(
-            "countdown"
-        );
-
-
-    if (!countdown) {
-
-        setTimeout(
-            watchArduinoCountdown,
-            500
-        );
-
-        return;
-    }
-
-
-    /*
-    Send the current value immediately.
-    */
-
-    syncArduinoCountdown(
-        countdown.textContent.trim()
+    arduinoLog(
+      `[ARDUINO] Cannot send ${cmd}: controller offline`
     );
 
-
-    /*
-    MutationObserver catches changes
-    immediately.
-    */
-
-    const observer =
-        new MutationObserver(
-            () => {
-
-                syncArduinoCountdown(
-                    countdown.textContent.trim()
-                );
-            }
-        );
+    return false;
+  }
 
 
-    observer.observe(
-        countdown,
-        {
-            childList: true,
-            characterData: true,
-            subtree: true
-        }
+  try {
+
+    await arduinoWriter.write(
+      new TextEncoder().encode(
+        cmd + "\n"
+      )
     );
-
-
-    /*
-    Backup polling.
-    */
-
-    setInterval(
-        () => {
-
-            syncArduinoCountdown(
-                countdown.textContent.trim()
-            );
-
-        },
-        100
-    );
-}
-
-
-// ============================================================
-// WATCH FLIGHT PHASE
-// ============================================================
-
-function watchArduinoPhase() {
-
-    const phaseElement =
-        document.getElementById(
-            "phase"
-        );
-
-
-    if (!phaseElement) {
-
-        setTimeout(
-            watchArduinoPhase,
-            500
-        );
-
-        return;
-    }
-
-
-    let previousPhase =
-        phaseElement.textContent.trim();
-
-
-    const observer =
-        new MutationObserver(
-            () => {
-
-                const currentPhase =
-                    phaseElement
-                        .textContent
-                        .trim();
-
-
-                if (
-                    currentPhase ===
-                    previousPhase
-                ) {
-
-                    return;
-                }
-
-
-                previousPhase =
-                    currentPhase;
-
-
-                sendPhaseToArduino(
-                    currentPhase
-                );
-            }
-        );
-
-
-    observer.observe(
-        phaseElement,
-        {
-            childList: true,
-            characterData: true,
-            subtree: true
-        }
-    );
-}
-
-
-// ============================================================
-// PHASE COMMANDS
-// ============================================================
-
-function sendPhaseToArduino(
-    phaseName
-) {
-
-    if (
-        !arduinoConnected
-    ) {
-
-        return;
-    }
-
-
-    switch (
-        phaseName
-    ) {
-
-        case "PRE-LAUNCH":
-
-            sendArduinoCommand(
-                "READY"
-            );
-
-            break;
-
-
-        case "IGNITION":
-
-            sendArduinoCommand(
-                "IGNITION"
-            );
-
-            break;
-
-
-        case "LIFTOFF":
-
-            sendArduinoCommand(
-                "LIFTOFF"
-            );
-
-            break;
-
-
-        case "ASCENT":
-
-            sendArduinoCommand(
-                "ASCENT"
-            );
-
-            break;
-
-
-        case "ORBIT":
-
-            sendArduinoCommand(
-                "ORBIT"
-            );
-
-            break;
-
-
-        case "SATELLITE DEPLOYED":
-
-            sendArduinoCommand(
-                "DEPLOY"
-            );
-
-            break;
-
-
-        case "MISSION SUCCESS":
-
-            sendArduinoCommand(
-                "SUCCESS"
-            );
-
-            break;
-
-
-        case "ABORTED":
-
-            sendArduinoCommand(
-                "ABORT"
-            );
-
-            break;
-    }
-}
-
-
-// ============================================================
-// UI
-// ============================================================
-
-function updateArduinoUI() {
-
-    const status =
-        document.getElementById(
-            "arduinoStatus"
-        );
-
-
-    const connect =
-        document.getElementById(
-            "arduinoConnectButton"
-        );
-
-
-    const disconnect =
-        document.getElementById(
-            "arduinoDisconnectButton"
-        );
-
-
-    const test =
-        document.getElementById(
-            "arduinoTestButton"
-        );
-
-
-    const port =
-        document.getElementById(
-            "arduinoPort"
-        );
-
-
-    const link =
-        document.getElementById(
-            "arduinoLink"
-        );
-
-
-    if (!status) {
-        return;
-    }
-
-
-    if (
-        arduinoConnected
-    ) {
-
-        status.textContent =
-            "ARDUINO ONLINE";
-
-
-        status.className =
-            "arduino-status online";
-
-
-        if (connect) {
-            connect.disabled =
-                true;
-        }
-
-
-        if (disconnect) {
-            disconnect.disabled =
-                false;
-        }
-
-
-        if (test) {
-            test.disabled =
-                false;
-        }
-
-
-        if (port) {
-            port.textContent =
-                "COM3";
-        }
-
-
-        if (link) {
-            link.textContent =
-                "ONLINE";
-        }
-
-    }
-
-    else {
-
-        status.textContent =
-            "ARDUINO OFFLINE";
-
-
-        status.className =
-            "arduino-status offline";
-
-
-        if (connect) {
-            connect.disabled =
-                false;
-        }
-
-
-        if (disconnect) {
-            disconnect.disabled =
-                true;
-        }
-
-
-        if (test) {
-            test.disabled =
-                true;
-        }
-
-
-        if (port) {
-            port.textContent =
-                "NOT CONNECTED";
-        }
-
-
-        if (link) {
-            link.textContent =
-                "OFFLINE";
-        }
-    }
-}
-
-
-// ============================================================
-// CREATE ARDUINO PANEL
-// ============================================================
-
-function createArduinoPanel() {
-
-    if (
-        document.getElementById(
-            "arduinoPanel"
-        )
-    ) {
-
-        return;
-    }
-
-
-    const panel =
-        document.createElement(
-            "section"
-        );
-
-
-    panel.id =
-        "arduinoPanel";
-
-
-    panel.className =
-        "panel arduino-panel";
-
-
-    panel.innerHTML = `
-
-        <div class="panel-heading">
-
-            <div>
-
-                <span class="label">
-                    HARDWARE INTERFACE
-                </span>
-
-                <h2>
-                    ARDUINO MISSION LINK
-                </h2>
-
-            </div>
-
-
-            <div
-                id="arduinoStatus"
-                class="arduino-status offline"
-            >
-                ARDUINO OFFLINE
-            </div>
-
-        </div>
-
-
-        <div class="arduino-controls">
-
-            <button
-                id="arduinoConnectButton"
-                class="normal-button"
-            >
-                CONNECT ARDUINO
-            </button>
-
-
-            <button
-                id="arduinoDisconnectButton"
-                class="normal-button"
-                disabled
-            >
-                DISCONNECT
-            </button>
-
-
-            <button
-                id="arduinoTestButton"
-                class="normal-button"
-                disabled
-            >
-                TEST READY
-            </button>
-
-        </div>
-
-
-        <div class="arduino-info">
-
-            <div>
-
-                <span>
-                    PORT
-                </span>
-
-                <strong id="arduinoPort">
-                    NOT CONNECTED
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <span>
-                    BAUD
-                </span>
-
-                <strong>
-                    9600
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <span>
-                    LINK
-                </span>
-
-                <strong id="arduinoLink">
-                    OFFLINE
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <span>
-                    LAST TX
-                </span>
-
-                <strong id="arduinoLastTx">
-                    --
-                </strong>
-
-            </div>
-
-        </div>
-    `;
-
-
-    const app =
-        document.querySelector(
-            ".app"
-        ) ||
-        document.body;
-
-
-    app.appendChild(
-        panel
-    );
-
-
-    document
-        .getElementById(
-            "arduinoConnectButton"
-        )
-        .addEventListener(
-            "click",
-            connectArduino
-        );
-
-
-    document
-        .getElementById(
-            "arduinoDisconnectButton"
-        )
-        .addEventListener(
-            "click",
-            disconnectArduino
-        );
-
-
-    document
-        .getElementById(
-            "arduinoTestButton"
-        )
-        .addEventListener(
-            "click",
-            () =>
-                sendArduinoCommand(
-                    "READY"
-                )
-        );
-
-
-    updateArduinoUI();
-}
-
-
-// ============================================================
-// INITIALIZE
-// ============================================================
-
-function initArduinoIntegration() {
-
-    createArduinoPanel();
-
-    watchArduinoCountdown();
-
-    watchArduinoPhase();
 
 
     arduinoLog(
-        "Arduino integration initialized"
+      `[ARDUINO] TX → ${cmd}`
     );
+
+
+    return true;
+
+  } catch (error) {
+
+    arduinoLog(
+      `[ARDUINO] TX error: ${
+        error?.message ||
+        error
+      }`
+    );
+
+
+    return false;
+  }
 }
 
 
-if (
-    document.readyState ===
-    "loading"
+/* ==========================================================
+   PROCESS ARDUINO RESPONSE
+   ========================================================== */
+
+function handleArduinoResponse(
+  line
 ) {
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        initArduinoIntegration
+  arduinoLog(
+    `[ARDUINO] RX ← ${line}`
+  );
+
+
+  const upper =
+    line.toUpperCase();
+
+
+  /* ========================================================
+     EMERGENCY EVENT
+     ======================================================== */
+
+  if (
+    upper.startsWith(
+      "EVENT:EMERGENCY"
+    )
+  ) {
+
+    let source =
+      "PHYSICAL_BUTTON";
+
+
+    const parts =
+      line.split(":");
+
+
+    if (
+      parts.length >= 3 &&
+      parts[2]
+    ) {
+
+      source =
+        parts
+          .slice(2)
+          .join(":")
+          .trim();
+    }
+
+
+    showArduinoEmergency(
+      source
     );
 
+
+    return;
+  }
+
+
+  /* ========================================================
+     ABORT EVENT
+     ======================================================== */
+
+  if (
+    upper.startsWith(
+      "EVENT:ABORT"
+    )
+  ) {
+
+    const parts =
+      line.split(":");
+
+
+    const source =
+      parts.length >= 3
+        ? parts
+            .slice(2)
+            .join(":")
+            .trim()
+        : "ARDUINO";
+
+
+    showArduinoAbort(
+      source
+    );
+
+
+    if (
+      typeof window.abortFromEmergency ===
+      "function"
+    ) {
+
+      window.abortFromEmergency(
+        line
+      );
+
+    } else if (
+      typeof window.abortMission ===
+      "function"
+    ) {
+
+      window.abortMission(
+        "ARDUINO_EMERGENCY"
+      );
+    }
+
+
+    return;
+  }
+
+
+  /* ========================================================
+     ABORT CONFIRMATION
+     ======================================================== */
+
+  if (
+    upper ===
+    "ABORT_OK"
+  ) {
+
+    showArduinoAbort(
+      "ARDUINO"
+    );
+
+
+    return;
+  }
+
+
+  /* ========================================================
+     OTHER EVENT
+     ======================================================== */
+
+  if (
+    upper.startsWith(
+      "EVENT:"
+    )
+  ) {
+
+    if (
+      typeof window.handleSafetyArduinoEvent ===
+      "function"
+    ) {
+
+      window.handleSafetyArduinoEvent(
+        line
+      );
+    }
+
+
+    return;
+  }
+
+
+  /* ========================================================
+     NORMAL SAFETY EVENTS
+     ======================================================== */
+
+  if (
+    upper ===
+      "READY_OK" ||
+    upper.startsWith(
+      "COUNTDOWN_OK:"
+    ) ||
+    upper ===
+      "IGNITION_OK" ||
+    upper ===
+      "LIFTOFF_OK" ||
+    upper ===
+      "ASCENT_OK" ||
+    upper ===
+      "ORBIT_OK" ||
+    upper ===
+      "DEPLOY_OK" ||
+    upper ===
+      "SUCCESS_OK" ||
+    upper ===
+      "WARNING_OK"
+  ) {
+
+    if (
+      typeof window.handleSafetyArduinoEvent ===
+      "function"
+    ) {
+
+      window.handleSafetyArduinoEvent(
+        line
+      );
+    }
+
+
+    return;
+  }
 }
 
-else {
 
-    initArduinoIntegration();
+/* ==========================================================
+   DISCONNECT
+   ========================================================== */
+
+async function disconnectArduino() {
+
+  arduinoReading =
+    false;
+
+
+  try {
+
+    await arduinoReader?.cancel();
+
+  } catch (_) {}
+
+
+  try {
+
+    arduinoWriter?.releaseLock();
+
+  } catch (_) {}
+
+
+  arduinoReader =
+    null;
+
+  arduinoWriter =
+    null;
+
+
+  try {
+
+    await arduinoPort?.close();
+
+  } catch (_) {}
+
+
+  arduinoPort =
+    null;
+
+
+  setArduinoConnected(
+    false,
+    "[ARDUINO] Serial link closed"
+  );
 }
 
 
-// ============================================================
-// USB DISCONNECT
-// ============================================================
+/* ==========================================================
+   GLOBAL API
+   ========================================================== */
+
+window.connectArduino =
+  connectArduino;
+
+window.sendArduino =
+  sendArduino;
+
+window.disconnectArduino =
+  disconnectArduino;
+
+window.handleArduinoResponse =
+  handleArduinoResponse;
+
+window.showArduinoEmergency =
+  showArduinoEmergency;
+
+window.hideArduinoEmergency =
+  hideArduinoEmergency;
+
+window.showArduinoAbort =
+  showArduinoAbort;
+
+
+/* ==========================================================
+   PHYSICAL SERIAL DISCONNECT
+   ========================================================== */
 
 if (
-    "serial" in navigator
+  "serial" in navigator
 ) {
 
-    navigator.serial.addEventListener(
-        "disconnect",
-        event => {
+  navigator.serial.addEventListener(
+    "disconnect",
+    event => {
 
-            if (
-                arduinoPort ===
-                event.target
-            ) {
+      if (
+        arduinoPort &&
+        event.target ===
+        arduinoPort
+      ) {
 
-                arduinoConnected =
-                    false;
-
-
-                arduinoPort =
-                    null;
+        arduinoReading =
+          false;
 
 
-                arduinoWriter =
-                    null;
+        try {
+
+          arduinoWriter
+            ?.releaseLock();
+
+        } catch (_) {}
 
 
-                updateArduinoUI();
+        arduinoReader =
+          null;
+
+        arduinoWriter =
+          null;
+
+        arduinoPort =
+          null;
 
 
-                arduinoLog(
-                    "Arduino USB disconnected"
-                );
-            }
-        }
-    );
+        setArduinoConnected(
+          false,
+          "[ARDUINO] UNO disconnected"
+        );
+      }
+    }
+  );
 }
