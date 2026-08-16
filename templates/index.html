@@ -2,73 +2,44 @@
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#05080f">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="theme-color"
-    content="#05080f"
-  >
-
-  <title>
-    Mission Control Project
-  </title>
+  <title>Mission Control Project</title>
 
   <link
     rel="stylesheet"
     href="{{ url_for('static', filename='css/style.css') }}"
   >
-
 </head>
-
 
 <body>
 
 <div class="app">
 
-
-  <!-- ======================================================
-       TOP BAR
-       ====================================================== -->
-
+  <!-- TOP BAR -->
   <header class="topbar">
 
     <div>
-
-      <h1>
-        MISSION CONTROL
-      </h1>
+      <h1>MISSION CONTROL</h1>
 
       <p>
         INDIAN SPACE MISSION PROJECT
         &nbsp;•&nbsp;
         FLIGHT OPERATIONS
       </p>
-
     </div>
 
-
     <div class="system-status">
-
       <span class="status-dot"></span>
-
       SYSTEM NOMINAL
-
     </div>
 
   </header>
 
 
-
-  <!-- ======================================================
-       CURRENT MISSION
-       ====================================================== -->
-
+  <!-- MISSION -->
   <section class="panel mission-panel">
 
     <div>
@@ -87,7 +58,6 @@
 
     </div>
 
-
     <div class="mission-time">
 
       <span class="label">
@@ -103,88 +73,37 @@
   </section>
 
 
-
-  <!-- ======================================================
-       BASIC TELEMETRY
-       ====================================================== -->
-
+  <!-- BASIC TELEMETRY -->
   <section class="telemetry-grid">
 
     <div class="telemetry-card">
-
-      <span>
-        ALTITUDE
-      </span>
-
-      <strong id="altitude">
-        0.0
-      </strong>
-
-      <small>
-        KM
-      </small>
-
+      <span>ALTITUDE</span>
+      <strong id="altitude">0.0</strong>
+      <small>KM</small>
     </div>
 
-
     <div class="telemetry-card">
-
-      <span>
-        VELOCITY
-      </span>
-
-      <strong id="velocity">
-        0.00
-      </strong>
-
-      <small>
-        KM/S
-      </small>
-
+      <span>VELOCITY</span>
+      <strong id="velocity">0.00</strong>
+      <small>KM/S</small>
     </div>
 
-
     <div class="telemetry-card">
-
-      <span>
-        FUEL
-      </span>
-
-      <strong id="fuel">
-        100.0
-      </strong>
-
-      <small>
-        %
-      </small>
-
+      <span>FUEL</span>
+      <strong id="fuel">100.0</strong>
+      <small>%</small>
     </div>
 
-
     <div class="telemetry-card">
-
-      <span>
-        TEMPERATURE
-      </span>
-
-      <strong id="temperature">
-        28.0
-      </strong>
-
-      <small>
-        °C
-      </small>
-
+      <span>TEMPERATURE</span>
+      <strong id="temperature">28.0</strong>
+      <small>°C</small>
     </div>
 
   </section>
 
 
-
-  <!-- ======================================================
-       ADVANCED TELEMETRY
-       ====================================================== -->
-
+  <!-- ADVANCED TELEMETRY -->
   <section class="panel phase1-panel">
 
     <div class="panel-heading">
@@ -201,7 +120,6 @@
 
       </div>
 
-
       <div
         id="phase1State"
         class="state-chip"
@@ -213,7 +131,6 @@
 
 
     <div class="phase1-grid">
-
 
       <div class="advanced-telemetry">
 
@@ -263,7 +180,6 @@
         </div>
 
       </div>
-
 
 
       <div class="ground-network">
@@ -321,29 +237,14 @@
 
         <div class="ground-readout">
 
-          <span>
-            SIGNAL
-          </span>
+          <span>SIGNAL</span>
+          <strong id="groundSignal">100%</strong>
 
-          <strong id="groundSignal">
-            100%
-          </strong>
+          <span>LATENCY</span>
+          <strong id="groundLatency">38 MS</strong>
 
-          <span>
-            LATENCY
-          </span>
-
-          <strong id="groundLatency">
-            38 MS
-          </strong>
-
-          <span>
-            PACKET LOSS
-          </span>
-
-          <strong id="groundLoss">
-            0.01%
-          </strong>
+          <span>PACKET LOSS</span>
+          <strong id="groundLoss">0.01%</strong>
 
         </div>
 
@@ -354,18 +255,128 @@
   </section>
 
 
+  <!-- =====================================================
+       ARDUINO HARDWARE CONTROL
+       ===================================================== -->
 
-  <!-- ======================================================
+  <section class="panel arduino-panel">
+
+    <div class="section-header">
+
+      <div>
+
+        <span class="label">
+          HARDWARE CONTROL
+        </span>
+
+        <h2>
+          ARDUINO UNO
+        </h2>
+
+      </div>
+
+      <div
+        id="arduinoStatus"
+        class="graph-status"
+      >
+        DISCONNECTED
+      </div>
+
+    </div>
+
+
+    <div class="arduino-grid">
+
+      <div>
+        <span>SERIAL LINK</span>
+        <strong id="serialStatus">
+          OFFLINE
+        </strong>
+      </div>
+
+      <div>
+        <span>CONTROLLER</span>
+        <strong>
+          ARDUINO UNO
+        </strong>
+      </div>
+
+      <div>
+        <span>BLUE LED</span>
+        <strong id="ledStatus">
+          STANDBY
+        </strong>
+      </div>
+
+      <div>
+        <span>BUZZER</span>
+        <strong id="buzzerStatus">
+          STANDBY
+        </strong>
+      </div>
+
+    </div>
+
+
+    <!-- ARDUINO BUTTONS -->
+    <div class="arduino-controls">
+
+      <button
+        id="connectArduinoButton"
+        class="secondary-button"
+        type="button"
+      >
+        CONNECT ARDUINO
+      </button>
+
+
+      <button
+        id="hardwareReadyButton"
+        class="secondary-button"
+        type="button"
+      >
+        READY SIGNAL
+      </button>
+
+
+      <button
+        id="hardwareAbortButton"
+        class="danger-mini"
+        type="button"
+      >
+        HARDWARE ABORT
+      </button>
+
+    </div>
+
+
+    <!-- ARDUINO CONSOLE -->
+    <div class="arduino-console">
+
+      <span class="label">
+        HARDWARE LINK
+      </span>
+
+      <div
+        id="arduinoConsole"
+        class="arduino-console-log"
+      >
+        [HARDWARE] Waiting for Arduino UNO connection
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
        MAIN GRID
-       ====================================================== -->
+       ===================================================== -->
 
   <section class="main-grid">
 
 
-    <!-- ====================================================
-         VEHICLE
-         ==================================================== -->
-
+    <!-- LAUNCH VEHICLE -->
     <div class="panel vehicle-panel">
 
       <div class="panel-heading">
@@ -381,7 +392,6 @@
           </h2>
 
         </div>
-
 
         <div
           id="vehicleState"
@@ -405,12 +415,10 @@
           class="tower"
           id="tower"
         >
-
           <span></span>
           <span></span>
           <span></span>
           <span></span>
-
         </div>
 
 
@@ -425,13 +433,9 @@
 
           <div class="rocket-core"></div>
 
-          <div
-            class="rocket-booster rocket-left"
-          ></div>
+          <div class="rocket-booster rocket-left"></div>
 
-          <div
-            class="rocket-booster rocket-right"
-          ></div>
+          <div class="rocket-booster rocket-right"></div>
 
           <div class="rocket-interstage"></div>
 
@@ -515,17 +519,12 @@
     </div>
 
 
-
-    <!-- ====================================================
-         FLIGHT STATUS
-         ==================================================== -->
-
+    <!-- FLIGHT PANEL -->
     <div class="panel flight-panel">
 
       <span class="label">
         FLIGHT STATUS
       </span>
-
 
       <h2 id="flightStatus">
         READY FOR LAUNCH
@@ -548,7 +547,7 @@
       </div>
 
 
-
+      <!-- ORBIT -->
       <div class="orbit-box">
 
         <div class="orbit-title">
@@ -583,11 +582,9 @@
             class="satellite"
             id="satellite"
           >
-
             <b></b>
             <i></i>
             <em></em>
-
           </div>
 
         </div>
@@ -626,12 +623,13 @@
       </div>
 
 
-
+      <!-- MAIN BUTTONS -->
       <div class="controls">
 
         <button
           id="launchButton"
           class="launch-button"
+          type="button"
         >
           LAUNCH
         </button>
@@ -640,6 +638,7 @@
         <button
           id="abortButton"
           class="abort-button"
+          type="button"
         >
           ABORT
         </button>
@@ -648,6 +647,7 @@
         <button
           id="fullscreenButton"
           class="normal-button"
+          type="button"
         >
           FULLSCREEN
         </button>
@@ -657,11 +657,7 @@
     </div>
 
 
-
-    <!-- ====================================================
-         MISSION LOG
-         ==================================================== -->
-
+    <!-- MISSION LOG -->
     <div class="panel log-panel">
 
       <div class="panel-heading">
@@ -677,7 +673,6 @@
           </h2>
 
         </div>
-
 
         <div
           id="eventCount"
@@ -708,37 +703,27 @@
 
         <div>
           <span>GUIDANCE</span>
-          <b id="subGuidance">
-            NOMINAL
-          </b>
+          <b id="subGuidance">NOMINAL</b>
         </div>
 
         <div>
           <span>PROPULSION</span>
-          <b id="subPropulsion">
-            NOMINAL
-          </b>
+          <b id="subPropulsion">NOMINAL</b>
         </div>
 
         <div>
           <span>THERMAL</span>
-          <b id="subThermal">
-            NOMINAL
-          </b>
+          <b id="subThermal">NOMINAL</b>
         </div>
 
         <div>
           <span>AVIONICS</span>
-          <b id="subAvionics">
-            NOMINAL
-          </b>
+          <b id="subAvionics">NOMINAL</b>
         </div>
 
         <div>
           <span>COMMUNICATION</span>
-          <b id="subComms">
-            NOMINAL
-          </b>
+          <b id="subComms">NOMINAL</b>
         </div>
 
       </div>
@@ -748,11 +733,7 @@
   </section>
 
 
-
-  <!-- ======================================================
-       FUEL
-       ====================================================== -->
-
+  <!-- FUEL -->
   <section class="panel fuel-panel">
 
     <div class="fuel-head">
@@ -780,11 +761,7 @@
   </section>
 
 
-
-  <!-- ======================================================
-       FOOTER
-       ====================================================== -->
-
+  <!-- FOOTER -->
   <section class="footer-controls">
 
     <span class="footer-note">
@@ -797,40 +774,16 @@
 
   </section>
 
-
 </div>
 
 
-
-<!-- ========================================================
-     MISSION ENGINE
-     ======================================================== -->
+<!-- =======================================================
+     JAVASCRIPT
+     ======================================================= -->
 
 <script
   src="{{ url_for('static', filename='js/mission.js') }}"
 ></script>
 
-
-
-<!-- ========================================================
-     ARDUINO
-     ======================================================== -->
-
-<script
-  src="{{ url_for('static', filename='js/arduino.js') }}"
-></script>
-
-
-
-<!-- ========================================================
-     SAFETY SYSTEM
-     ======================================================== -->
-
-<script
-  src="{{ url_for('static', filename='js/safety.js') }}"
-></script>
-
-
 </body>
-
 </html>
