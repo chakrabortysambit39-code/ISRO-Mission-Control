@@ -3,16 +3,6 @@
 let running = false;
 let phase = "IDLE";
 let countdown = 10;
-
-// Public read-only mission state for safety/Arduino modules.
-// Other scripts must use window.missionPhase instead of accessing the
-// private `phase` binding directly.
-Object.defineProperty(window, "missionPhase", {
-  configurable: true,
-  enumerable: false,
-  get: () => phase
-});
-let countdown = 10;
 let altitude = 0;
 let velocity = 0;
 let fuel = 100;
@@ -37,10 +27,7 @@ let audioContext = null;
 let soundEnabled = true;
 let eventCount = 0;
 
-// ==========================================================
-// V10 FEATURE STATE
-// ==========================================================
-
+// V10 state must be initialized before resetMission() runs.
 let v10Armed = false;
 let v10Hold = false;
 let v10Failure = false;
@@ -51,14 +38,13 @@ let v10MaxAltitude = 0;
 let v10MaxVelocity = 0;
 let v10MaxTemperature = 28;
 
-
 const audio = {
-  ignition: new Audio("/static/assets/ignition.mp3"),
-  liftoff: new Audio("/static/assets/liftoff.mp3"),
-  orbit: new Audio("/static/assets/orbit_confirmed.mp3"),
-  deployment: new Audio("/static/assets/satellite_deployed.mp3"),
-  success: new Audio("/static/assets/mission_accomplished.mp3"),
-  song: new Audio("/static/assets/maa_tujhe_salaam.mp3")
+  ignition: new Audio("/static/assets/audio/ignition.mp3"),
+  liftoff: new Audio("/static/assets/audio/liftoff.mp3"),
+  orbit: new Audio("/static/assets/audio/orbit_confirmed.mp3"),
+  deployment: new Audio("/static/assets/audio/satellite_deployed.mp3"),
+  success: new Audio("/static/assets/audio/mission_accomplished.mp3"),
+  song: new Audio("/static/assets/audio/maa_tujhe_salaam.mp3")
 };
 
 Object.values(audio).forEach(a => {
@@ -729,36 +715,117 @@ function resetMission() {
    ========================================================== */
 
 function startMission() {
+
+  // Never allow a second launch loop.
   if (running) return;
 
+
   initAudio();
+
   stopAudio();
 
+  clearInterval(timer);
+
+  timer = null;
+
+
   running = true;
+
   phase = "COUNTDOWN";
+
   countdown = 10;
 
   missionSeconds = 0;
+
   orbitSeconds = 0;
 
   altitude = 0;
+
   velocity = 0;
+
   fuel = 100;
+
   temperature = 28;
+
   signal = 100;
+
   latency = 38;
 
-  el.countdown.textContent = "T−10";
+  packetLoss = 0.01;
 
-  log("FLIGHT", "Launch sequence initiated");
-  log("COUNTDOWN", "T−10");
+  gLoad = 1;
+
+  pressure = 101.3;
+
+  roll = 0;
+
+  pitch = 0;
+
+  yaw = 0;
+
+  battery = 100;
+
+  busVoltage = 28;
+
+  thrust = 0;
+
+  fuelFlow = 0;
+
+  dataRate = 0;
+
+
+  window.missionAscentAuthorized =
+    false;
+
+  window.missionAscentPermissionOpen =
+    false;
+
+  window.missionEmergencyActive =
+    false;
+
+
+  if (
+    typeof v10Hold !==
+    "undefined"
+  ) {
+
+    v10Hold = false;
+  }
+
+
+  closeAscentPermission();
+
+
+  el.countdown.textContent =
+    "T−10";
+
+
+  log(
+    "FLIGHT",
+    "Launch sequence initiated"
+  );
+
+  log(
+    "COUNTDOWN",
+    "T−10"
+  );
+
 
   beep();
+
+
   updateAll();
 
-  clearInterval(timer);
-  timer = setInterval(tick, 1000);
+
+  // Exactly one mission clock.
+  timer =
+    setInterval(
+      tick,
+      1000
+    );
 }
+
+
 /* ==========================================================
    ASCENT PERMISSION
    ========================================================== */
@@ -1838,15 +1905,18 @@ window.abortMission =
 window.resetMission =
   resetMission;
 
+window.startMission =
+  startMission;
+
 
 /* ==========================================================
    MAIN BUTTONS
    ========================================================== */
 
 $("launchButton")
-  .addEventListener(
+  ?.addEventListener(
     "click",
-    startMission
+    () => window.startMission()
   );
 
 
@@ -1883,8 +1953,6 @@ resetMission();
 /* ==========================================================
    V10 FEATURE LAYER
    ========================================================== */
-
-
 
 const V10_PHASES = [
 
@@ -2630,7 +2698,6 @@ async function v10SaveToServer() {
     );
   }
 }
-
 
 function v10Console(
   command
