@@ -18,7 +18,10 @@
 
 <div class="app">
 
-  <!-- TOP BAR -->
+  <!-- =====================================================
+       TOP BAR
+       ===================================================== -->
+
   <header class="topbar">
 
     <div>
@@ -39,7 +42,10 @@
   </header>
 
 
-  <!-- MISSION -->
+  <!-- =====================================================
+       MISSION HEADER
+       ===================================================== -->
+
   <section class="panel mission-panel">
 
     <div>
@@ -58,6 +64,7 @@
 
     </div>
 
+
     <div class="mission-time">
 
       <span class="label">
@@ -73,37 +80,86 @@
   </section>
 
 
-  <!-- BASIC TELEMETRY -->
+  <!-- =====================================================
+       BASIC TELEMETRY
+       ===================================================== -->
+
   <section class="telemetry-grid">
 
     <div class="telemetry-card">
-      <span>ALTITUDE</span>
-      <strong id="altitude">0.0</strong>
-      <small>KM</small>
+
+      <span>
+        ALTITUDE
+      </span>
+
+      <strong id="altitude">
+        0.0
+      </strong>
+
+      <small>
+        KM
+      </small>
+
     </div>
 
-    <div class="telemetry-card">
-      <span>VELOCITY</span>
-      <strong id="velocity">0.00</strong>
-      <small>KM/S</small>
-    </div>
 
     <div class="telemetry-card">
-      <span>FUEL</span>
-      <strong id="fuel">100.0</strong>
-      <small>%</small>
+
+      <span>
+        VELOCITY
+      </span>
+
+      <strong id="velocity">
+        0.00
+      </strong>
+
+      <small>
+        KM/S
+      </small>
+
     </div>
 
+
     <div class="telemetry-card">
-      <span>TEMPERATURE</span>
-      <strong id="temperature">28.0</strong>
-      <small>°C</small>
+
+      <span>
+        FUEL
+      </span>
+
+      <strong id="fuel">
+        100.0
+      </strong>
+
+      <small>
+        %
+      </small>
+
+    </div>
+
+
+    <div class="telemetry-card">
+
+      <span>
+        TEMPERATURE
+      </span>
+
+      <strong id="temperature">
+        28.0
+      </strong>
+
+      <small>
+        °C
+      </small>
+
     </div>
 
   </section>
 
 
-  <!-- ADVANCED TELEMETRY -->
+  <!-- =====================================================
+       ADVANCED TELEMETRY
+       ===================================================== -->
+
   <section class="panel phase1-panel">
 
     <div class="panel-heading">
@@ -132,55 +188,131 @@
 
     <div class="phase1-grid">
 
+
+      <!-- ADVANCED TELEMETRY -->
+
       <div class="advanced-telemetry">
 
         <div>
-          <span>G-LOAD</span>
-          <strong id="gLoad">1.00 G</strong>
+
+          <span>
+            G-LOAD
+          </span>
+
+          <strong id="gLoad">
+            1.00 G
+          </strong>
+
         </div>
 
-        <div>
-          <span>PRESSURE</span>
-          <strong id="pressure">101.3 KPA</strong>
-        </div>
 
         <div>
-          <span>ROLL</span>
-          <strong id="roll">0.00°</strong>
+
+          <span>
+            PRESSURE
+          </span>
+
+          <strong id="pressure">
+            101.3 KPA
+          </strong>
+
         </div>
 
-        <div>
-          <span>PITCH</span>
-          <strong id="pitch">0.00°</strong>
-        </div>
 
         <div>
-          <span>YAW</span>
-          <strong id="yaw">0.00°</strong>
+
+          <span>
+            ROLL
+          </span>
+
+          <strong id="roll">
+            0.00°
+          </strong>
+
         </div>
 
-        <div>
-          <span>BATTERY</span>
-          <strong id="battery">100%</strong>
-        </div>
 
         <div>
-          <span>BUS VOLTAGE</span>
-          <strong id="busVoltage">28.0 V</strong>
+
+          <span>
+            PITCH
+          </span>
+
+          <strong id="pitch">
+            0.00°
+          </strong>
+
         </div>
 
-        <div>
-          <span>THRUST</span>
-          <strong id="thrust">0%</strong>
-        </div>
 
         <div>
-          <span>FUEL FLOW</span>
-          <strong id="fuelFlow">0.0 KG/S</strong>
+
+          <span>
+            YAW
+          </span>
+
+          <strong id="yaw">
+            0.00°
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            BATTERY
+          </span>
+
+          <strong id="battery">
+            100%
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            BUS VOLTAGE
+          </span>
+
+          <strong id="busVoltage">
+            28.0 V
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            THRUST
+          </span>
+
+          <strong id="thrust">
+            0%
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            FUEL FLOW
+          </span>
+
+          <strong id="fuelFlow">
+            0.0 KG/S
+          </strong>
+
         </div>
 
       </div>
 
+
+      <!-- GROUND NETWORK -->
 
       <div class="ground-network">
 
@@ -237,14 +369,31 @@
 
         <div class="ground-readout">
 
-          <span>SIGNAL</span>
-          <strong id="groundSignal">100%</strong>
+          <span>
+            SIGNAL
+          </span>
 
-          <span>LATENCY</span>
-          <strong id="groundLatency">38 MS</strong>
+          <strong id="groundSignal">
+            100%
+          </strong>
 
-          <span>PACKET LOSS</span>
-          <strong id="groundLoss">0.01%</strong>
+
+          <span>
+            LATENCY
+          </span>
+
+          <strong id="groundLatency">
+            38 MS
+          </strong>
+
+
+          <span>
+            PACKET LOSS
+          </span>
+
+          <strong id="groundLoss">
+            0.01%
+          </strong>
 
         </div>
 
@@ -256,7 +405,7 @@
 
 
   <!-- =====================================================
-       ARDUINO HARDWARE CONTROL
+       ARDUINO HARDWARE
        ===================================================== -->
 
   <section class="panel arduino-panel">
@@ -275,6 +424,7 @@
 
       </div>
 
+
       <div
         id="arduinoStatus"
         class="graph-status"
@@ -288,37 +438,61 @@
     <div class="arduino-grid">
 
       <div>
-        <span>SERIAL LINK</span>
+
+        <span>
+          SERIAL LINK
+        </span>
+
         <strong id="serialStatus">
           OFFLINE
         </strong>
+
       </div>
 
+
       <div>
-        <span>CONTROLLER</span>
+
+        <span>
+          CONTROLLER
+        </span>
+
         <strong>
           ARDUINO UNO
         </strong>
+
       </div>
 
+
       <div>
-        <span>BLUE LED</span>
+
+        <span>
+          BLUE LED
+        </span>
+
         <strong id="ledStatus">
           STANDBY
         </strong>
+
       </div>
 
+
       <div>
-        <span>BUZZER</span>
+
+        <span>
+          BUZZER
+        </span>
+
         <strong id="buzzerStatus">
           STANDBY
         </strong>
+
       </div>
 
     </div>
 
 
-    <!-- ARDUINO BUTTONS -->
+    <!-- ARDUINO CONTROLS -->
+
     <div class="arduino-controls">
 
       <button
@@ -351,6 +525,7 @@
 
 
     <!-- ARDUINO CONSOLE -->
+
     <div class="arduino-console">
 
       <span class="label">
@@ -376,7 +551,10 @@
   <section class="main-grid">
 
 
-    <!-- LAUNCH VEHICLE -->
+    <!-- ===================================================
+         LAUNCH VEHICLE
+         =================================================== -->
+
     <div class="panel vehicle-panel">
 
       <div class="panel-heading">
@@ -392,6 +570,7 @@
           </h2>
 
         </div>
+
 
         <div
           id="vehicleState"
@@ -415,10 +594,12 @@
           class="tower"
           id="tower"
         >
+
           <span></span>
           <span></span>
           <span></span>
           <span></span>
+
         </div>
 
 
@@ -433,9 +614,13 @@
 
           <div class="rocket-core"></div>
 
-          <div class="rocket-booster rocket-left"></div>
+          <div
+            class="rocket-booster rocket-left"
+          ></div>
 
-          <div class="rocket-booster rocket-right"></div>
+          <div
+            class="rocket-booster rocket-right"
+          ></div>
 
           <div class="rocket-interstage"></div>
 
@@ -519,12 +704,16 @@
     </div>
 
 
-    <!-- FLIGHT PANEL -->
+    <!-- ===================================================
+         FLIGHT PANEL
+         =================================================== -->
+
     <div class="panel flight-panel">
 
       <span class="label">
         FLIGHT STATUS
       </span>
+
 
       <h2 id="flightStatus">
         READY FOR LAUNCH
@@ -548,6 +737,7 @@
 
 
       <!-- ORBIT -->
+
       <div class="orbit-box">
 
         <div class="orbit-title">
@@ -567,24 +757,32 @@
 
           <div class="stars"></div>
 
-          <div class="orbit-ring ring-a"></div>
+          <div
+            class="orbit-ring ring-a"
+          ></div>
 
-          <div class="orbit-ring ring-b"></div>
+          <div
+            class="orbit-ring ring-b"
+          ></div>
 
           <div class="earth"></div>
+
 
           <div
             class="orbital-craft"
             id="orbitalCraft"
           ></div>
 
+
           <div
             class="satellite"
             id="satellite"
           >
+
             <b></b>
             <i></i>
             <em></em>
+
           </div>
 
         </div>
@@ -623,7 +821,8 @@
       </div>
 
 
-      <!-- MAIN BUTTONS -->
+      <!-- MAIN CONTROLS -->
+
       <div class="controls">
 
         <button
@@ -657,7 +856,10 @@
     </div>
 
 
-    <!-- MISSION LOG -->
+    <!-- ===================================================
+         MISSION LOG
+         =================================================== -->
+
     <div class="panel log-panel">
 
       <div class="panel-heading">
@@ -673,6 +875,7 @@
           </h2>
 
         </div>
+
 
         <div
           id="eventCount"
@@ -702,28 +905,67 @@
       <div class="subsystems">
 
         <div>
-          <span>GUIDANCE</span>
-          <b id="subGuidance">NOMINAL</b>
+
+          <span>
+            GUIDANCE
+          </span>
+
+          <b id="subGuidance">
+            NOMINAL
+          </b>
+
         </div>
 
-        <div>
-          <span>PROPULSION</span>
-          <b id="subPropulsion">NOMINAL</b>
-        </div>
 
         <div>
-          <span>THERMAL</span>
-          <b id="subThermal">NOMINAL</b>
+
+          <span>
+            PROPULSION
+          </span>
+
+          <b id="subPropulsion">
+            NOMINAL
+          </b>
+
         </div>
 
-        <div>
-          <span>AVIONICS</span>
-          <b id="subAvionics">NOMINAL</b>
-        </div>
 
         <div>
-          <span>COMMUNICATION</span>
-          <b id="subComms">NOMINAL</b>
+
+          <span>
+            THERMAL
+          </span>
+
+          <b id="subThermal">
+            NOMINAL
+          </b>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            AVIONICS
+          </span>
+
+          <b id="subAvionics">
+            NOMINAL
+          </b>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            COMMUNICATION
+          </span>
+
+          <b id="subComms">
+            NOMINAL
+          </b>
+
         </div>
 
       </div>
@@ -733,7 +975,10 @@
   </section>
 
 
-  <!-- FUEL -->
+  <!-- =====================================================
+       FUEL
+       ===================================================== -->
+
   <section class="panel fuel-panel">
 
     <div class="fuel-head">
@@ -761,7 +1006,10 @@
   </section>
 
 
-  <!-- FOOTER -->
+  <!-- =====================================================
+       FOOTER
+       ===================================================== -->
+
   <section class="footer-controls">
 
     <span class="footer-note">
@@ -777,13 +1025,21 @@
 </div>
 
 
-<!-- =======================================================
-     JAVASCRIPT
-     ======================================================= -->
+<!-- =====================================================
+     IMPORTANT SCRIPT ORDER
+     ===================================================== -->
 
+<!-- Arduino MUST load first -->
+<script
+  src="{{ url_for('static', filename='js/arduino.js') }}"
+></script>
+
+
+<!-- Mission loads second -->
 <script
   src="{{ url_for('static', filename='js/mission.js') }}"
 ></script>
+
 
 </body>
 </html>
