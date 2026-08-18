@@ -810,3 +810,68 @@ button:active {
             none;
     }
 }
+/* ==========================================================
+   ARDUINO CONSOLE — BUTTERY FIX
+   ========================================================== */
+
+#arduinoConsole {
+    height: 180px;
+    margin-top: 10px;
+    padding: 12px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    background:
+        linear-gradient(
+            180deg,
+            #040a11,
+            #02070d
+        );
+
+    border: 1px solid #173149;
+    border-radius: 7px;
+
+    color: #7f95aa;
+
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 9px;
+    line-height: 1.7;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+
+    box-shadow:
+        inset 0 0 25px rgba(0,0,0,.35);
+
+    scrollbar-width: thin;
+}
+
+#arduinoConsole > div {
+    padding: 2px 4px;
+
+    transition:
+        background .2s ease;
+}
+
+#arduinoConsole > div:hover {
+    background:
+        rgba(0,183,255,.05);
+}
+
+#arduinoConsole::-webkit-scrollbar {
+    width: 6px;
+}
+
+#arduinoConsole::-webkit-scrollbar-track {
+    background: #03080d;
+}
+
+#arduinoConsole::-webkit-scrollbar-thumb {
+    background: #1b344a;
+    border-radius: 10px;
+}
+
+#arduinoConsole::-webkit-scrollbar-thumb:hover {
+    background: #28506e;
+}
