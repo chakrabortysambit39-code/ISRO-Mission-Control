@@ -399,3 +399,414 @@ body.emergency-active {
     }
 
 }
+/* ==========================================================
+   🍰 BUTTERY GUI UPGRADE
+   ========================================================== */
+
+/* ---------- GLOBAL SMOOTHNESS ---------- */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+
+/* ---------- PANELS ---------- */
+
+.panel,
+.telemetry-card,
+.vehicle-meta div,
+.subsystems div,
+.advanced-telemetry div,
+.ground-node,
+.ground-readout,
+.orbit-scene,
+.vehicle-scene,
+.fuel-panel {
+    transition:
+        transform .28s cubic-bezier(.22,1,.36,1),
+        border-color .28s ease,
+        box-shadow .28s ease,
+        background .28s ease;
+}
+
+
+/* ---------- PREMIUM PANELS ---------- */
+
+.panel {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12,24,38,.96),
+            rgba(4,11,19,.98)
+        );
+
+    border-color:
+        rgba(55,91,120,.55);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+
+/* ---------- TELEMETRY CARDS ---------- */
+
+.telemetry-card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12,25,39,.95),
+            rgba(5,13,22,.98)
+        );
+}
+
+.telemetry-card:hover {
+    transform: translateY(-3px);
+
+    border-color:
+        rgba(0,183,255,.38);
+
+    box-shadow:
+        0 14px 32px rgba(0,0,0,.35),
+        0 0 20px rgba(0,150,255,.05);
+}
+
+
+/* ---------- BUTTONS ---------- */
+
+button {
+    transition:
+        transform .18s cubic-bezier(.22,1,.36,1),
+        filter .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform:
+        translateY(0)
+        scale(.97);
+}
+
+
+/* ---------- LAUNCH BUTTON ---------- */
+
+.launch-button {
+    position: relative;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #10452f,
+            #0b3022
+        );
+
+    box-shadow:
+        0 6px 18px rgba(0,180,100,.08);
+}
+
+.launch-button::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -120%;
+
+    width: 80%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.12),
+            transparent
+        );
+
+    transform: skewX(-20deg);
+
+    transition:
+        left .7s ease;
+}
+
+.launch-button:hover::after {
+    left: 140%;
+}
+
+.launch-button:hover {
+    border-color:
+        rgba(70,255,150,.7);
+
+    box-shadow:
+        0 8px 25px rgba(0,230,118,.12);
+}
+
+
+/* ---------- ABORT BUTTON ---------- */
+
+.abort-button:hover,
+.danger-mini:hover,
+.emergency-button:hover {
+    box-shadow:
+        0 8px 25px rgba(255,50,60,.12);
+}
+
+
+/* ---------- COUNTDOWN ---------- */
+
+.countdown {
+    transition:
+        transform .3s cubic-bezier(.22,1,.36,1),
+        text-shadow .3s ease;
+}
+
+
+/* ---------- ROCKET ---------- */
+
+/*
+   IMPORTANT:
+   The old CSS contained:
+
+   .rocket.IGNITION {
+       animation:vibration .07s infinite
+   }
+
+   That caused the rocket to shake.
+
+   We completely disable it here.
+*/
+
+.rocket.IGNITION {
+    animation: none !important;
+
+    transform:
+        translateX(-50%)
+        translateY(0) !important;
+}
+
+
+/* Smooth rocket movement */
+
+.rocket {
+    transition:
+        bottom 1.2s cubic-bezier(.22,1,.36,1),
+        transform 1.2s cubic-bezier(.22,1,.36,1),
+        opacity .8s ease;
+}
+
+
+/* ---------- ENGINE FLAME ---------- */
+
+/*
+   Flame can still have a gentle movement,
+   but the ROCKET itself stays perfectly stable.
+*/
+
+.rocket.IGNITION .rocket-plume,
+.rocket.LIFTOFF .rocket-plume,
+.rocket.ASCENT .rocket-plume {
+    animation:
+        softFlame .45s ease-in-out infinite alternate !important;
+}
+
+@keyframes softFlame {
+
+    from {
+        transform:
+            scaleX(.97)
+            scaleY(.98);
+    }
+
+    to {
+        transform:
+            scaleX(1.02)
+            scaleY(1.04);
+    }
+}
+
+
+/* ---------- VEHICLE SCENE ---------- */
+
+.vehicle-scene,
+.orbit-scene {
+    box-shadow:
+        inset 0 0 35px rgba(0,0,0,.28);
+}
+
+
+/* ---------- ORBIT ---------- */
+
+.orbit-scene {
+    transition:
+        box-shadow .5s ease,
+        border-color .5s ease;
+}
+
+.orbit-scene:hover {
+    border-color:
+        rgba(0,183,255,.3);
+
+    box-shadow:
+        inset 0 0 40px rgba(0,100,180,.08);
+}
+
+
+/* ---------- MISSION LOG ---------- */
+
+.mission-log {
+    scroll-behavior: smooth;
+}
+
+.mission-log div {
+    padding-left: 4px;
+
+    transition:
+        background .2s ease;
+}
+
+.mission-log div:hover {
+    background:
+        rgba(255,255,255,.025);
+}
+
+
+/* ---------- FUEL BAR ---------- */
+
+.fuel-bar {
+    transition:
+        width .8s cubic-bezier(.22,1,.36,1);
+}
+
+
+/* ---------- STATUS DOT ---------- */
+
+.status-dot {
+    animation:
+        softPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes softPulse {
+
+    0%,
+    100% {
+        opacity: .65;
+        transform: scale(.9);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* ---------- STATE CHIP ---------- */
+
+.state-chip {
+    transition:
+        color .25s ease,
+        border-color .25s ease,
+        background .25s ease;
+}
+
+
+/* ---------- TELEMETRY NUMBERS ---------- */
+
+.telemetry-card strong,
+.advanced-telemetry strong,
+.ground-readout strong,
+.orbit-readout strong {
+    transition:
+        color .25s ease,
+        text-shadow .25s ease;
+}
+
+
+/* ---------- ARDUINO PANEL ---------- */
+
+.arduino-panel {
+    transition:
+        border-color .3s ease,
+        box-shadow .3s ease;
+}
+
+.arduino-panel:hover {
+    border-color:
+        rgba(60,180,255,.3);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.3);
+}
+
+
+/* ---------- SCROLLBARS ---------- */
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background:
+        #040a11;
+}
+
+::-webkit-scrollbar-thumb {
+    background:
+        #1b344a;
+
+    border-radius:
+        10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background:
+        #28506e;
+}
+
+
+/* ---------- SELECTION ---------- */
+
+::selection {
+    background:
+        rgba(0,183,255,.25);
+
+    color:
+        #ffffff;
+}
+
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 760px) {
+
+    .panel {
+        border-radius:
+            10px;
+    }
+
+    .telemetry-card:hover {
+        transform:
+            none;
+    }
+
+    button:hover {
+        transform:
+            none;
+    }
+}
